@@ -1,0 +1,546 @@
+<!doctype HTML>
+<meta charset = 'utf-8'>
+<html>
+  <head>
+    
+    <script src='http://d3js.org/d3.v3.min.js' type='text/javascript'></script>
+    <script src='http://d3js.org/topojson.v1.min.js' type='text/javascript'></script>
+    <script src='http://datamaps.github.io/scripts/datamaps.all.min.js' type='text/javascript'></script>
+    <script src='http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js' type='text/javascript'></script>
+    
+    <style>
+    .rChart {
+      display: block;
+      margin-left: auto; 
+      margin-right: auto;
+      width: 800px;
+      height: 400px;
+    }  
+    </style>
+    
+  </head>
+  <body >
+    
+    <div id = 'chart262817ca35e7' class = 'rChart datamaps'></div>    
+    <script id='popup-template' type='text/x-handlebars-template'>
+    
+</script>
+<script>
+  var chartParams = {
+ "dom": "chart262817ca35e7",
+"width":    800,
+"height":    400,
+"scope": "usa",
+"fills": {
+ "Range_1": "#EFF3FF",
+"Range_2": "#BDD7E7",
+"Range_3": "#6BAED6",
+"Range_4": "#3182BD",
+"Range_5": "#08519C" 
+},
+"legend": false,
+"labels": true,
+"data": {
+ "AK": {
+ "State": [ "AK" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1525 ],
+"TotalCount": [ 6748 ],
+"Perc": [     23 ],
+"fillKey": [ "Range_5" ] 
+},
+"AL": {
+ "State": [ "AL" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 8600 ],
+"TotalCount": [ 47836 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"AR": {
+ "State": [ "AR" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 5157 ],
+"TotalCount": [ 29591 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"AZ": {
+ "State": [ "AZ" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 12728 ],
+"TotalCount": [ 66532 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"CA": {
+ "State": [ "CA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 73696 ],
+"TotalCount": [ 371403 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"CO": {
+ "State": [ "CO" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 9445 ],
+"TotalCount": [ 52107 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"CT": {
+ "State": [ "CT" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 6636 ],
+"TotalCount": [ 36382 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"DE": {
+ "State": [ "DE" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1616 ],
+"TotalCount": [ 8767 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"FL": {
+ "State": [ "FL" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 36748 ],
+"TotalCount": [ 191034 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"GA": {
+ "State": [ "GA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 17551 ],
+"TotalCount": [ 96568 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"HI": {
+ "State": [ "HI" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 2749 ],
+"TotalCount": [ 14286 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"IA": {
+ "State": [ "IA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 5445 ],
+"TotalCount": [ 31817 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"ID": {
+ "State": [ "ID" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 2527 ],
+"TotalCount": [ 15786 ],
+"Perc": [     16 ],
+"fillKey": [ "Range_1" ] 
+},
+"IL": {
+ "State": [ "IL" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 23732 ],
+"TotalCount": [ 128070 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"IN": {
+ "State": [ "IN" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 12237 ],
+"TotalCount": [ 66363 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"KS": {
+ "State": [ "KS" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 5054 ],
+"TotalCount": [ 29369 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"KY": {
+ "State": [ "KY" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 7952 ],
+"TotalCount": [ 44997 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"LA": {
+ "State": [ "LA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 8704 ],
+"TotalCount": [ 44627 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"MA": {
+ "State": [ "MA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 13291 ],
+"TotalCount": [ 68725 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"MD": {
+ "State": [ "MD" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 12502 ],
+"TotalCount": [ 65605 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"ME": {
+ "State": [ "ME" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 2336 ],
+"TotalCount": [ 12982 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"MI": {
+ "State": [ "MI" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 18642 ],
+"TotalCount": [ 99441 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"MN": {
+ "State": [ "MN" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 9492 ],
+"TotalCount": [ 54988 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"MO": {
+ "State": [ "MO" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 11081 ],
+"TotalCount": [ 61699 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"MS": {
+ "State": [ "MS" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 5683 ],
+"TotalCount": [ 29648 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"MT": {
+ "State": [ "MT" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1733 ],
+"TotalCount": [ 10113 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"NC": {
+ "State": [ "NC" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 17340 ],
+"TotalCount": [ 97310 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"ND": {
+ "State": [ "ND" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1334 ],
+"TotalCount": [ 7435 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"NE": {
+ "State": [ "NE" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 3105 ],
+"TotalCount": [ 18835 ],
+"Perc": [     16 ],
+"fillKey": [ "Range_1" ] 
+},
+"NH": {
+ "State": [ "NH" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 2305 ],
+"TotalCount": [ 13547 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"NJ": {
+ "State": [ "NJ" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 15715 ],
+"TotalCount": [ 88510 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"NM": {
+ "State": [ "NM" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 3923 ],
+"TotalCount": [ 19714 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"NV": {
+ "State": [ "NV" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 5327 ],
+"TotalCount": [ 26748 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"NY": {
+ "State": [ "NY" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 38598 ],
+"TotalCount": [ 196165 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"OH": {
+ "State": [ "OH" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 22345 ],
+"TotalCount": [ 118223 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"OK": {
+ "State": [ "OK" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 6863 ],
+"TotalCount": [ 37146 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"OR": {
+ "State": [ "OR" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 7319 ],
+"TotalCount": [ 39342 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"PA": {
+ "State": [ "PA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 24102 ],
+"TotalCount": [ 128382 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"RI": {
+ "State": [ "RI" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 2093 ],
+"TotalCount": [ 10618 ],
+"Perc": [     20 ],
+"fillKey": [ "Range_5" ] 
+},
+"SC": {
+ "State": [ "SC" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 8609 ],
+"TotalCount": [ 47205 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"SD": {
+ "State": [ "SD" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1481 ],
+"TotalCount": [ 8740 ],
+"Perc": [     17 ],
+"fillKey": [ "Range_1" ] 
+},
+"TN": {
+ "State": [ "TN" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 11628 ],
+"TotalCount": [ 65148 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"TX": {
+ "State": [ "TX" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 44400 ],
+"TotalCount": [ 253599 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"UT": {
+ "State": [ "UT" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 4146 ],
+"TotalCount": [ 28967 ],
+"Perc": [     14 ],
+"fillKey": [ "Range_1" ] 
+},
+"VA": {
+ "State": [ "VA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 14964 ],
+"TotalCount": [ 83044 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"VT": {
+ "State": [ "VT" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 1183 ],
+"TotalCount": [ 6388 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"WA": {
+ "State": [ "WA" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 12273 ],
+"TotalCount": [ 69593 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"WI": {
+ "State": [ "WI" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 10417 ],
+"TotalCount": [ 58556 ],
+"Perc": [     18 ],
+"fillKey": [ "Range_2" ] 
+},
+"WV": {
+ "State": [ "WV" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 3413 ],
+"TotalCount": [ 18268 ],
+"Perc": [     19 ],
+"fillKey": [ "Range_4" ] 
+},
+"WY": {
+ "State": [ "WY" ],
+"Single": [ "Single" ],
+"SEX": [ 1 ],
+"Count": [ 918 ],
+"TotalCount": [ 5828 ],
+"Perc": [     16 ],
+"fillKey": [ "Range_1" ] 
+} 
+},
+"geographyConfig": {
+ "popupTemplate":  function(geography, data){
+  return '<div class=hoverinfo><strong>' + geography.properties.name + 
+  ': ' + data.Perc + '% of state population are single male' + '</strong></div>';
+  }  
+},
+"id": "chart262817ca35e7" 
+}
+  chartParams.element = document.getElementById('chart262817ca35e7')
+  
+  
+  var mapchart262817ca35e7 = new Datamap(chartParams);
+  
+  
+    
+  // draw a bubble map if specified
+  if (chartParams.bubbles) {
+    var bubbles = chartParams.bubbles
+    mapchart262817ca35e7.bubbles(bubbles)
+  }
+  
+  if (chartParams.labels){
+    mapchart262817ca35e7.labels()
+  }
+  
+  if (chartParams.legend){
+    mapchart262817ca35e7.legend()
+  }
+  
+  setProjection = function( element, options ) {
+    var projection, path;
+ 
+      projection = d3.geo.albersUsa()
+        .scale(element.offsetWidth)
+        .translate([element.offsetWidth / 2, element.offsetHeight / 2]);
+ 
+    path = d3.geo.path()
+      .projection( projection );
+ 
+    return {path: path, projection: projection};
+  }
+</script>
+
+<style>
+.datamaps {
+  position: relative;
+}
+</style>
+    
+    <script></script>    
+  </body>
+</html>

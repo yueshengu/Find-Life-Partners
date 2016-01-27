@@ -58,19 +58,46 @@ install_github('ramnathv/rMaps')
 library(rMaps)
 library(plyr);library(rCharts)
 
-# easy but unperfect plots
-choro<-ichoropleth(Perc ~ State, data=maritalStateGeneral2[maritalStateGeneral2$SEX==1&
-                                                      maritalStateGeneral2$Single=='Single',])
+# easy maps
+choro<-ichoropleth(Perc ~ State,legend=F,
+                   data=maritalStateGeneral2[maritalStateGeneral2$SEX==1&maritalStateGeneral2$Single=='Single',])
 choro$set(geographyConfig = list(
   popupTemplate = "#! function(geography, data){
   return '<div class=hoverinfo><strong>' + geography.properties.name + 
-  ': ' + data.Perc + '% Single Male' + '</strong></div>';
+  ': ' + data.Perc + '% of state population are single male' + '</strong></div>';
   } !#" 
 ))
 choro
+
+
 ichoropleth(Perc ~ State, 
             data=maritalStateGeneral2[maritalStateGeneral2$SEX==2&maritalStateGeneral2$Single=='Single',],
             pal = 'PuRd',ncuts=9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # better plot but more work
@@ -104,7 +131,6 @@ map
 
 
 
-quantile(male$Perc, seq(0, 1, 1/9))
 
 
 
