@@ -1,0 +1,83 @@
+# read data
+pop1<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv')
+pop2<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv')
+
+############################################################################
+############################## Data Cleaning ###############################
+# combine pops
+pop<-rbind(pop1,pop2)
+
+# make MSP more readable
+pop$MSP[is.na(pop$MSP)]<-'Under 15'
+pop$MSP[pop$MSP==1]<-'Now married, spouse present'
+pop$MSP[pop$MSP==2]<-'Now married, spouse absent'
+pop$MSP[pop$MSP==3]<-'Widowed'
+pop$MSP[pop$MSP==4]<-'Divorced'
+pop$MSP[pop$MSP==5]<-'Separated'
+pop$MSP[pop$MSP==6]<-'Never married'
+
+
+# get state abbreviation
+names(statename)[1]<-'ST'
+pop2<-merge(pop,statename,by='ST',all.x=T)
+
+# set DC = Maryland
+pop2$abbr2<-pop2$abbr
+pop2$abbr2[pop2$abbr=='DC']<-'MD'
+pop2$abbr2<-factor(pop2$abbr2)
+
+# create "single"
+pop2$single<-'Single'
+pop2$single[pop2$MSP%in%c('Under 15','Now married, spouse present','Now married, spouse absent')]<-
+  'Married or too young'
+###############################################################################################
+
+
+############################################################################
+############################## Plotting ####################################
+
+#maritalState<-aggregate(pop2$MSP, by=list(pop2$MSP,pop2$abbr2,pop2$SEX), FUN=length)
+
+maritalStateGeneral<-aggregate(pop2$MSP, by=list(pop2$single,pop2$abbr2,pop2$SEX), FUN=length)
+names(maritalStateGeneral)<-c('Single','State','SEX','Count')
+state<-aggregate(pop2$MSP, by=list(pop2$abbr2), FUN=length)
+names(state)<-c('State','TotalCount')
+maritalStateGeneral2<-merge(maritalStateGeneral,state,by='State',all.x=T)
+maritalStateGeneral2$Perc<-round(maritalStateGeneral2$Count/maritalStateGeneral2$TotalCount*100,0)
+
+require(devtools)
+install_github('ramnathv/rCharts@dev')
+install_github('ramnathv/rMaps')
+library(rMaps)
+library(plyr);library(rCharts)
+
+# easy but unperfect plots
+ichoropleth(Perc ~ State, data=maritalStateGeneral2[maritalStateGeneral2$SEX==1&
+                                                      maritalStateGeneral2$Single=='Single',])
+ichoropleth(Perc ~ State, 
+            data=maritalStateGeneral2[maritalStateGeneral2$SEX==2&maritalStateGeneral2$Single=='Single',],
+            pal = 'PuRd',ncuts=9)
+
+
+# better plot but more work
+male<-maritalStateGeneral2[maritalStateGeneral2$SEX==1&maritalStateGeneral2$Single=='Single',]
+male$fillKey<-factor(paste0(male$Perc%/%2*2,'-',male$Perc%/%2*2+1,'%'))
+male$State<-as.character(male$State)
+fills = setNames(
+  c(RColorBrewer::brewer.pal(5, 'YlOrRd'), 'white'),
+  c(paste0(7:11*2,'-',7:11*2+1,'%'), 'defaultFill')
+)
+y = toJSONArray2(male, json = F)
+names(y) = lapply(y, '[[', 'State')
+
+options(rcharts.cdn = TRUE)
+map <- Datamaps$new()
+map$set(
+  dom = 'chart_1',
+  scope = 'usa',
+  fills = fills,
+  data = y,
+  legend = TRUE,
+  labels = TRUE
+)
+map
