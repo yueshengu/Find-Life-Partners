@@ -1,0 +1,103 @@
+"StateName","State","Single","SEX","CountWithWeight","TotalCountWithWeight","Perc","ActualPop","ExpectedCount2015"
+"District of Columbia","DC","Single","Female",220655,646449,34,672228,228558
+"District of Columbia","DC","Single","Male",178557,646449,28,672228,188224
+"Rhode Island","RI","Single","Female",261967,1051511,25,1056298,264074
+"New York","NY","Single","Female",4869445,19651127,25,19795791,4948948
+"Mississippi","MS","Single","Female",712178,2991207,24,2992333,718160
+"Massachusetts","MA","Single","Female",1602853,6692824,24,6794422,1630661
+"Maryland","MD","Single","Female",1397670,5928814,24,6006401,1441536
+"Louisiana","LA","Single","Female",1110488,4625470,24,4670724,1120974
+"Florida","FL","Single","Female",4703868,19552860,24,20271272,4865105
+"Vermont","VT","Single","Female",141429,626630,23,626042,143990
+"South Carolina","SC","Single","Female",1111115,4774839,23,4896146,1126114
+"Pennsylvania","PA","Single","Female",2958861,12773801,23,12802503,2944576
+"Ohio","OH","Single","Female",2607939,11570808,23,11613423,2671087
+"North Carolina","NC","Single","Female",2220549,9848060,23,10042802,2309844
+"New Mexico","NM","Single","Female",478567,2085287,23,2085109,479575
+"Maine","ME","Single","Female",299996,1328302,23,1329328,305745
+"Georgia","GA","Single","Female",2280865,9992167,23,10214860,2349418
+"Delaware","DE","Single","Female",217379,925749,23,945934,217565
+"Connecticut","CT","Single","Female",828939,3596080,23,3590886,825904
+"Alabama","AL","Single","Female",1119102,4833722,23,4858979,1117565
+"West Virginia","WV","Single","Female",406167,1854304,22,1844128,405708
+"Virginia","VA","Single","Female",1799092,8260405,22,8382993,1844258
+"Tennessee","TN","Single","Female",1437748,6495978,22,6600299,1452066
+"Oregon","OR","Single","Female",852770,3930065,22,4028977,886375
+"New Jersey","NJ","Single","Female",1992584,8899339,22,8958013,1970763
+"Nevada","NV","Single","Female",606602,2790136,22,2890845,635986
+"Nevada","NV","Single","Male",601908,2790136,22,2890845,635986
+"Missouri","MO","Single","Female",1308091,6044171,22,6083672,1338408
+"Michigan","MI","Single","Female",2225210,9895622,22,9922576,2182967
+"Illinois","IL","Single","Female",2871907,12882135,22,12859995,2829199
+"California","CA","Single","Female",8569231,38332521,22,39144818,8611860
+"Arizona","AZ","Single","Female",1437026,6626624,22,6828065,1502174
+"Alaska","AK","Single","Male",163833,735132,22,738432,162455
+"Wisconsin","WI","Single","Female",1187671,5742713,21,5771337,1211981
+"Washington","WA","Single","Female",1438721,6971406,21,7170351,1505774
+"Vermont","VT","Single","Male",130856,626630,21,626042,131469
+"Texas","TX","Single","Female",5474629,26448193,21,27469114,5768514
+"Rhode Island","RI","Single","Male",224257,1051511,21,1056298,221823
+"Oklahoma","OK","Single","Female",797834,3850568,21,3911338,821381
+"New York","NY","Single","Male",4125815,19651127,21,19795791,4157116
+"New Mexico","NM","Single","Male",440392,2085287,21,2085109,437873
+"New Hampshire","NH","Single","Female",275650,1323459,21,1330608,279428
+"Montana","MT","Single","Female",213668,1015165,21,1032949,216919
+"Louisiana","LA","Single","Male",968794,4625470,21,4670724,980852
+"Kentucky","KY","Single","Female",936785,4395295,21,4425092,929269
+"Indiana","IN","Single","Female",1405641,6570902,21,6619680,1390133
+"Hawaii","HI","Single","Female",289860,1404054,21,1431603,300637
+"Florida","FL","Single","Male",4074372,19552860,21,20271272,4256967
+"California","CA","Single","Male",7976773,38332521,21,39144818,8220412
+"Arkansas","AR","Single","Female",626498,2959373,21,2978204,625423
+"West Virginia","WV","Single","Male",370120,1854304,20,1844128,368826
+"Washington","WA","Single","Male",1362736,6971406,20,7170351,1434070
+"South Dakota","SD","Single","Female",165152,844877,20,858469,171694
+"South Carolina","SC","Single","Male",952653,4774839,20,4896146,979229
+"Pennsylvania","PA","Single","Male",2560870,12773801,20,12802503,2560501
+"Oregon","OR","Single","Male",784909,3930065,20,4028977,805795
+"Ohio","OH","Single","Male",2295442,11570808,20,11613423,2322685
+"North Dakota","ND","Single","Male",145700,723393,20,756927,151385
+"Nebraska","NE","Single","Female",364372,1868516,20,1896190,379238
+"Montana","MT","Single","Male",198466,1015165,20,1032949,206590
+"Mississippi","MS","Single","Male",605135,2991207,20,2992333,598467
+"Minnesota","MN","Single","Female",1086543,5420380,20,5489594,1097919
+"Michigan","MI","Single","Male",1993010,9895622,20,9922576,1984515
+"Massachusetts","MA","Single","Male",1352519,6692824,20,6794422,1358884
+"Maryland","MD","Single","Male",1166762,5928814,20,6006401,1201280
+"Maine","ME","Single","Male",265757,1328302,20,1329328,265866
+"Iowa","IA","Single","Female",611164,3090416,20,3123899,624780
+"Illinois","IL","Single","Male",2531769,12882135,20,12859995,2571999
+"Hawaii","HI","Single","Male",286248,1404054,20,1431603,286321
+"Georgia","GA","Single","Male",1964720,9992167,20,10214860,2042972
+"Delaware","DE","Single","Male",183657,925749,20,945934,189187
+"Connecticut","CT","Single","Male",712063,3596080,20,3590886,718177
+"Colorado","CO","Single","Male",1038372,5268367,20,5456574,1091315
+"Colorado","CO","Single","Female",1060266,5268367,20,5456574,1091315
+"Arizona","AZ","Single","Male",1350163,6626624,20,6828065,1365613
+"Wisconsin","WI","Single","Male",1109192,5742713,19,5771337,1096554
+"Virginia","VA","Single","Male",1597001,8260405,19,8382993,1592769
+"Texas","TX","Single","Male",4963409,26448193,19,27469114,5219132
+"Tennessee","TN","Single","Male",1237366,6495978,19,6600299,1254057
+"South Dakota","SD","Single","Male",157789,844877,19,858469,163109
+"Oklahoma","OK","Single","Male",730365,3850568,19,3911338,743154
+"North Dakota","ND","Single","Female",137364,723393,19,756927,143816
+"North Carolina","NC","Single","Male",1887903,9848060,19,10042802,1908132
+"New Jersey","NJ","Single","Male",1687793,8899339,19,8958013,1702022
+"New Hampshire","NH","Single","Male",251980,1323459,19,1330608,252816
+"Missouri","MO","Single","Male",1154107,6044171,19,6083672,1155898
+"Minnesota","MN","Single","Male",1013993,5420380,19,5489594,1043023
+"Kentucky","KY","Single","Male",838428,4395295,19,4425092,840767
+"Kansas","KS","Single","Female",559121,2893957,19,2911641,553212
+"Indiana","IN","Single","Male",1251332,6570902,19,6619680,1257739
+"Arkansas","AR","Single","Male",550034,2959373,19,2978204,565859
+"Alaska","AK","Single","Female",138593,735132,19,738432,140302
+"Alabama","AL","Single","Male",936367,4833722,19,4858979,923206
+"Wyoming","WY","Single","Female",107320,582658,18,586107,105499
+"Wyoming","WY","Single","Male",107583,582658,18,586107,105499
+"Nebraska","NE","Single","Male",334101,1868516,18,1896190,341314
+"Kansas","KS","Single","Male",523572,2893957,18,2911641,524095
+"Iowa","IA","Single","Male",566180,3090416,18,3123899,562302
+"Idaho","ID","Single","Female",289343,1612136,18,1654930,297887
+"Idaho","ID","Single","Male",276590,1612136,17,1654930,281338
+"Utah","UT","Single","Male",467633,2900872,16,2995919,479347
+"Utah","UT","Single","Female",476184,2900872,16,2995919,479347

@@ -1,11 +1,10 @@
+library(rCharts)
+library(htmltab)
+
 # source mapping function
-source('C:/Users/ygu/Documents/modified choropleth.R')
-
-
-# read data
-pop1<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv')
-pop2<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv')
-statename<-read.csv('C:/Users/ygu/Desktop/columbia/statename.csv')
+source('C:/Users/ygu/Desktop/columbia/cycle1-1/figs/modified choropleth.R')
+actualPopulation<-
+  htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
 
 # class(pop1$FOD1P)
 # head(pop1$FOD1P)
@@ -17,6 +16,13 @@ statename<-read.csv('C:/Users/ygu/Desktop/columbia/statename.csv')
 
 ############################################################################
 ############################## Data Cleaning ###############################
+
+actualPopulation<-actualPopulation[1:52,3:4]
+names(actualPopulation)<-c('StateName','ActualPop')
+actualPopulation$State<-substring(actualPopulation$State,3)
+actualPopulation$State[48]<-substring(actualPopulation$State[48],3)
+actualPopulation$ActualPop<-as.numeric(gsub(',','',actualPopulation$ActualPop))
+
 # combine pops
 pop<-rbind(pop1,pop2)
 
@@ -33,10 +39,9 @@ pop$MSP[pop$MSP==6]<-'Never married'
 names(statename)[1]<-'ST'
 pop2<-merge(pop,statename,by='ST',all.x=T)
 
-# set DC = Maryland
-pop2$abbr2<-pop2$abbr
-pop2$abbr2[pop2$abbr=='DC']<-'MD'
-pop2$abbr2<-factor(pop2$abbr2)
+# remove DC
+# pop2<-pop2[pop2$abbr!='DC',]
+# pop2
 
 # create "single"
 pop2$single<-'Single'
@@ -45,12 +50,24 @@ pop2$single[pop2$MSP%in%c('Under 15','Now married, spouse present','Now married,
 
 #maritalState<-aggregate(pop2$MSP, by=list(pop2$MSP,pop2$abbr2,pop2$SEX), FUN=length)
 
-maritalStateGeneral<-aggregate(pop2$MSP, by=list(pop2$single,pop2$abbr2,pop2$SEX), FUN=length)
-names(maritalStateGeneral)<-c('Single','State','SEX','Count')
-state<-aggregate(pop2$MSP, by=list(pop2$abbr2), FUN=length)
-names(state)<-c('State','TotalCount')
+maritalStateGeneral<-aggregate(pop2$PWGTP, by=list(pop2$single,pop2$abbr,pop2$SEX), FUN=sum)
+names(maritalStateGeneral)<-c('Single','State','SEX','CountWithWeight')
+state<-aggregate(pop2$PWGTP, by=list(pop2$abbr,pop2$name), FUN=sum)
+names(state)<-c('State','StateName','TotalCountWithWeight')
 maritalStateGeneral2<-merge(maritalStateGeneral,state,by='State',all.x=T)
 maritalStateGeneral2$Perc<-round(maritalStateGeneral2$Count/maritalStateGeneral2$TotalCount*100,0)
+maritalStateGeneral3<-merge(maritalStateGeneral2,actualPopulation,by='StateName',all.x=T)
+maritalStateGeneral3$SEX[maritalStateGeneral3$SEX==1]<-'Male'
+maritalStateGeneral3$SEX[maritalStateGeneral3$SEX==2]<-'Female'
+maritalStateGeneral3$ExpectedCount2015<-round(maritalStateGeneral3$Perc*maritalStateGeneral3$ActualPop/100,0)
+
+singles<-maritalStateGeneral3[maritalStateGeneral3$Single=='Single',]
+singles<-singles[rev(order(singles$Perc)),]
+
+write.csv(singles,'C:/Users/ygu/Desktop/columbia/cycle1-1/singles.csv',row.names=F)
+
+
+
 
 require(devtools)
 install_github('ramnathv/rCharts@dev')
@@ -68,11 +85,12 @@ choro$set(geographyConfig = list(
   } !#" 
 ))
 choro
-
+choro$save('singleMales.html', cdn = TRUE)
+choro$publish("Single Males plot")
 
 ichoropleth(Perc ~ State, 
             data=maritalStateGeneral2[maritalStateGeneral2$SEX==2&maritalStateGeneral2$Single=='Single',],
-            pal = 'PuRd',ncuts=9)
+            pal = 'PuRd')
 
 
 
@@ -80,10 +98,11 @@ ichoropleth(Perc ~ State,
 
 
 
+g2<-ggplot(ag.mtc, aes(x = factor(gear), y = meanwt, fill=factor(vs))) + 
+  geom_bar(stat = "identity", position=position_dodge()
 
-
-
-
+ggplot(pop,aes(x=SEX),y=SEX,fill=factor(SEX),color=factor(SEX)) +  
+  geom_bar(stat = "identity", position=position_dodge())
 
 
 
