@@ -25,8 +25,8 @@ Malejob<- pus %>%
   filter(SEX %in% c(1)) %>% ## select male
   group_by(ST) %>% ##group by state
   summarise(count=sum(PWGTP))
-  
-  Malejob
+
+Malejob
 
 
 Female <- pus %>%
@@ -48,7 +48,6 @@ Femalejob
 
 ##define the state code
 stateCode = "ST,State
-22,Louisiana/LA
 36,NewYork/NY"
 statecode <- fread(stateCode)
 statecode
@@ -74,4 +73,4 @@ AllPlot<- ggplot(visual, aes(x=State, y=value, fill=factor(gender))) +
         panel.background = element_rect(fill = 'white' ))
 ggsave(paste("Plot_","_",".png", sep = ""), width = 20, height = 15)
 AllPlot
-
+##
