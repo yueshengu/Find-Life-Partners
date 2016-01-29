@@ -6,11 +6,12 @@ output: html_document
 ---
 
 ```{r}
-
+plot(cars)
 ```
 
 
 ```{r, echo=FALSE}
+head(cars)
 ```
 
 ###Percentage of single males earning more than 10K annually 
