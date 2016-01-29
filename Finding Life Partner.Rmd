@@ -26,7 +26,7 @@ output: html_document
 <p align="center"><img src="doc/image/perfectGirlNum.png" ></p>
 
 
-###[Soulmate Exploration Engine](https://yueshengu.shinyapps.io/findingLifePartner/)
+<a href="https://yueshengu.shinyapps.io/findingLifePartner/" target="_blank" style="font-size:40px" >Soulmate Exploration Engine</a>
 
 ```{r, echo=FALSE}
  
