@@ -106,7 +106,7 @@ ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 
 
 
-
+knit('C:/Users/ygu/Desktop/columbia/cycle1-1/Finding Life Partner.Rmd')
 
 
 library(leaflet)

@@ -5,13 +5,10 @@ date: "January 27, 2016"
 output: html_document
 ---
 
-```{r}
-
-```
 
 
-```{r, echo=FALSE}
-```
+
+
 
 ###Percentage of single males earning more than 10K annually 
 ![sugarDaddy](./output/sugarDaddyPerc.png)
@@ -26,7 +23,4 @@ output: html_document
 ![perfectGirl2](./output/perfectGirlNum.png)
 
 
-```{r, echo=FALSE}
- 
 
-```
