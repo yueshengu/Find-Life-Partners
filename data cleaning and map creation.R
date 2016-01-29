@@ -3,8 +3,14 @@ library(htmltab)
 
 # source mapping function
 source('C:/Users/ygu/Desktop/columbia/cycle1-1/figs/modified choropleth.R')
+
+
 actualPopulation<-
   htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
+
+pop1<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv')
+pop2<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv')
+statename<-read.csv('C:/Users/ygu/Desktop/columbia/cycle1-1/data/statename.csv')
 
 # class(pop1$FOD1P)
 # head(pop1$FOD1P)
@@ -19,8 +25,8 @@ actualPopulation<-
 
 actualPopulation<-actualPopulation[1:52,3:4]
 names(actualPopulation)<-c('StateName','ActualPop')
-actualPopulation$State<-substring(actualPopulation$State,3)
-actualPopulation$State[48]<-substring(actualPopulation$State[48],3)
+actualPopulation$StateName<-substring(actualPopulation$StateName,3)
+actualPopulation$StateName[48]<-substring(actualPopulation$StateName[48],3)
 actualPopulation$ActualPop<-as.numeric(gsub(',','',actualPopulation$ActualPop))
 
 # combine pops
@@ -48,26 +54,22 @@ pop2$single<-'Single'
 pop2$single[pop2$MSP%in%c('Under 15','Now married, spouse present','Now married, spouse absent')]<-
   'Married or too young'
 
-#maritalState<-aggregate(pop2$MSP, by=list(pop2$MSP,pop2$abbr2,pop2$SEX), FUN=length)
+# removing DC for mapping purpose
+pop3<-pop2[pop2$abbr!='DC',]
+save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData')
 
-maritalStateGeneral<-aggregate(pop2$PWGTP, by=list(pop2$single,pop2$abbr,pop2$SEX), FUN=sum)
-names(maritalStateGeneral)<-c('Single','State','SEX','CountWithWeight')
-state<-aggregate(pop2$PWGTP, by=list(pop2$abbr,pop2$name), FUN=sum)
+
+state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
-maritalStateGeneral2<-merge(maritalStateGeneral,state,by='State',all.x=T)
-maritalStateGeneral2$Perc<-round(maritalStateGeneral2$Count/maritalStateGeneral2$TotalCount*100,0)
-maritalStateGeneral3<-merge(maritalStateGeneral2,actualPopulation,by='StateName',all.x=T)
-maritalStateGeneral3$SEX[maritalStateGeneral3$SEX==1]<-'Male'
-maritalStateGeneral3$SEX[maritalStateGeneral3$SEX==2]<-'Female'
-maritalStateGeneral3$ExpectedCount2015<-round(maritalStateGeneral3$Perc*maritalStateGeneral3$ActualPop/100,0)
 
-singles<-maritalStateGeneral3[maritalStateGeneral3$Single=='Single',]
-singles<-singles[rev(order(singles$Perc)),]
-
-write.csv(singles,'C:/Users/ygu/Desktop/columbia/cycle1-1/singles.csv',row.names=F)
-
-
-
+# Plotting sugar daddy
+sugarDaddy<-pop3[pop3$single=='Single'&pop3$SEX==1&!is.na(pop3$WAGP)&pop3$WAGP>=10000,]
+sugarDaddy2<-aggregate(sugarDaddy$PWGTP,by=list(sugarDaddy$abbr), FUN=sum)
+names(sugarDaddy2)<-c('State','CountWithWeight')
+sugarDaddy3<-merge(sugarDaddy2,state,by='State',all.x=T)
+sugarDaddy3$Perc<-round(sugarDaddy3$Count/sugarDaddy3$TotalCount*100,1)
+sugarDaddy4<-merge(sugarDaddy3,actualPopulation,by='StateName',all.x=T)
+sugarDaddy4$ExpectedCount2015<-round(sugarDaddy4$Perc*sugarDaddy4$ActualPop/100,0)
 
 require(devtools)
 install_github('ramnathv/rCharts@dev')
@@ -76,8 +78,7 @@ library(rMaps)
 library(plyr);library(rCharts)
 
 # easy maps
-choro<-ichoropleth(Perc ~ State,legend=F,
-                   data=maritalStateGeneral2[maritalStateGeneral2$SEX==1&maritalStateGeneral2$Single=='Single',])
+choro<-ichoropleth(Perc ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 choro$set(geographyConfig = list(
   popupTemplate = "#! function(geography, data){
   return '<div class=hoverinfo><strong>' + geography.properties.name + 
@@ -85,32 +86,36 @@ choro$set(geographyConfig = list(
   } !#" 
 ))
 choro
-choro$save('singleMales.html', cdn = TRUE)
-choro$publish("Single Males plot")
-
-ichoropleth(Perc ~ State, 
-            data=maritalStateGeneral2[maritalStateGeneral2$SEX==2&maritalStateGeneral2$Single=='Single',],
-            pal = 'PuRd')
+ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
+# choro$save('singleMales.html', cdn = TRUE)
+# choro$publish("Single Males plot")
 
 
+# plotting perfect girl
+pgirl<-pop3[pop3$single=='Single'&pop3$SEX==2&pop3$AGEP<30&!is.na(pop3$SCHL)&pop3$SCHL>=21&!is.na(pop3$ESR)&
+              pop3$ESR%in%c(1,2,4,5),]
+pgirl2<-aggregate(pgirl$PWGTP,by=list(pgirl$abbr), FUN=sum)
+names(pgirl2)<-c('State','CountWithWeight')
+pgirl3<-merge(pgirl2,state,by='State',all.x=T)
+pgirl3$Perc<-round(pgirl3$Count/pgirl3$TotalCount*100,1)
+pgirl4<-merge(pgirl3,actualPopulation,by='StateName',all.x=T)
+pgirl4$ExpectedCount2015<-round(pgirl4$Perc*pgirl4$ActualPop/100,0)
 
-
-
-
-
-g2<-ggplot(ag.mtc, aes(x = factor(gear), y = meanwt, fill=factor(vs))) + 
-  geom_bar(stat = "identity", position=position_dodge()
-
-ggplot(pop,aes(x=SEX),y=SEX,fill=factor(SEX),color=factor(SEX)) +  
-  geom_bar(stat = "identity", position=position_dodge())
-
+ichoropleth(Perc ~ State,data=pgirl4,pal = 'PuRd')
+ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 
 
 
 
 
 
+library(leaflet)
+library(maps)
+mapStates = map("state", fill = TRUE, plot = FALSE)
+leaflet(data = mapStates) %>% addTiles() %>%
+  addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
 
+a
 
 
 
