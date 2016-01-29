@@ -33,7 +33,7 @@ weisingledata$n <- weisingledata$n/sum(sindata$PWGTP)
 
 
 #Draw the graph of single people by gender
-genderplot<-ggplot(weisingledata,aes(x=SEX, y=n, fill=as.factor(SEX)))+geom_bar(stat="identity")
+genderplot<-ggplot(weisingledata,aes(x=SEX, y=n, fill=as.factor(SEX)))+geom_bar(stat="identity")+ggtitle("Comparing single people in US by gender")
 genderplot<-genderplot+scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Percentage of people")
 genderplot
 ggsave("genderplot.png")
