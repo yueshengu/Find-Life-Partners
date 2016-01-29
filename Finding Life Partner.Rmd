@@ -14,17 +14,19 @@ output: html_document
 ```
 
 ###Percentage of single males earning more than 10K annually 
-<p align="center"><img src="output/sugarDaddyPerc.png" ></p>
+<p align="center"><img src="doc/image/sugarDaddyPerc.png" ></p>
 
 ###Expected total number of single males earning more than 10K annually
-<p align="center"><img src="output/sugarDaddyNum.png" ></p>
+<p align="center"><img src="doc/image/sugarDaddyNum.png" ></p>
 
 ###Percentage of single females younger between 16-29 years old, graduated from college, and have a job
-<p align="center"><img src="output/perfectGirlPerc.png" ></p>
+<p align="center"><img src="doc/image/perfectGirlPerc.png" ></p>
 
 ###Expected total number of single females younger between 16-29 years old, graduated from college, and have a job
-<p align="center"><img src="output/perfectGirlNum.png" ></p>
+<p align="center"><img src="doc/image/perfectGirlNum.png" ></p>
 
+
+###[Soulmate Exploration Engine](https://yueshengu.shinyapps.io/findingLifePartner/)
 
 ```{r, echo=FALSE}
  

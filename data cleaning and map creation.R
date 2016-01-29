@@ -59,6 +59,63 @@ pop3<-pop2[pop2$abbr!='DC',]
 save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData')
 
 
+
+pop4<-pop3[,c('PWGTP','AGEP','CIT','COW','SCHL','SEX','WAGP','WKHP','MSP','single','abbr','RAC1P',
+              'FSCHP','name')]
+
+pop4$CIT[pop4$CIT==1]<-'Born in the U.S'
+pop4$CIT[pop4$CIT==2]<-'Born in Puerto Rico, Guam, the U.S. Virgin Islands, or the Northern Marianas'
+pop4$CIT[pop4$CIT==3]<-'Born abroad of American parent(s)'
+pop4$CIT[pop4$CIT==4]<-'U.S. citizen by naturalization'
+pop4$CIT[pop4$CIT==5]<-'Not a citizen of the U.S.'
+pop4$CIT<-factor(pop4$CIT)
+
+pop4$COW[is.na(pop4$COW)]<-'Less than 16 years old'
+pop4$COW[pop4$COW==1]<-'Employee of a private for-profit company'
+pop4$COW[pop4$COW==2]<-'Employee of a private not-for-profit'
+pop4$COW[pop4$COW==3]<-'Local government employee'
+pop4$COW[pop4$COW==4]<-'State government employee'
+pop4$COW[pop4$COW==5]<-'Federal government employee'
+pop4$COW[pop4$COW==6]<-'Self-employed in own not incorporated'
+pop4$COW[pop4$COW==7]<-'Self-employed in own incorporated'
+pop4$COW[pop4$COW==8]<-'Working without pay in family business or farm'
+pop4$COW[pop4$COW==9]<-'Unemployed and last worked 5 years ago or earlier'
+pop4$COW<-factor(pop4$COW)
+
+pop4$SCHL[is.na(pop4$SCHL)]<-'Less than 3 years old'
+pop4$SCHL[pop4$SCHL==1]<-'No schooling completed'
+pop4$SCHL[pop4$SCHL%in%c(2:3)]<-'Nursery school, preschool, Kindergarten'
+pop4$SCHL[pop4$SCHL%in%c(4:15)]<-'Grade 1-12 and no diploma'
+pop4$SCHL[pop4$SCHL==16]<-'Regular high school diploma'
+pop4$SCHL[pop4$SCHL==17]<-'GED or alternative credential'
+pop4$SCHL[pop4$SCHL%in%c(18:19)]<-'Some college, no degree'
+pop4$SCHL[pop4$SCHL==20]<-"Associate's degree"
+pop4$SCHL[pop4$SCHL==21]<-"Bachelor's degree"
+pop4$SCHL[pop4$SCHL==22]<-"Master's degree"
+pop4$SCHL[pop4$SCHL==23]<-"Professional degree beyond a bachelor's degree"
+pop4$SCHL[pop4$SCHL==24]<-'Doctorate degree'
+pop4$SCHL<-factor(pop4$SCHL)
+
+pop4$SEX[pop4$SEX==1]<-'Male'
+pop4$SEX[pop4$SEX==2]<-'Female'
+pop4$SEX<-factor(pop4$SEX)
+
+pop4$RAC1P[pop4$RAC1P==1]<-'White'
+pop4$RAC1P[pop4$RAC1P==2]<-'Black or African American'
+pop4$RAC1P[pop4$RAC1P%in%c(3:5)]<-'American Indian or Alaska Native'
+pop4$RAC1P[pop4$RAC1P==6]<-'Asian'
+pop4$RAC1P[pop4$RAC1P==7]<-'Hawaiian and Other Pacific Islander'
+pop4$RAC1P[pop4$RAC1P==8]<-'Other Race'
+pop4$RAC1P[pop4$RAC1P==9]<-'2 or More Races'
+pop4$RAC1P<-factor(pop4$RAC1P)
+
+pop4$MSP<-factor(pop4$MSP)
+pop4$single<-factor(pop4$single)
+
+save(pop4,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
+
+
+
 state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
 
