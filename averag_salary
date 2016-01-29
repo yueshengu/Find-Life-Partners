@@ -76,6 +76,8 @@ statecode <- fread(stateCode)
 
 FemaleWAGP <- summarise(Female, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
 MaleWAGP <- summarise(Male, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
+MaleWAGP$gender <- c("Male")
+FemaleWAGP$gender <- c("Female")
 Salary <- rbind(MaleWAGP,FemaleWAGP)
 
  allplot <- ggplot(Salary,aes(x=State, y=average,fill=factor(gender)))
@@ -83,3 +85,23 @@ Salary <- rbind(MaleWAGP,FemaleWAGP)
  allplot <- allplot +geom_bar(stat="identity",position="dodge")+theme(axis.text.x = element_text(angle = 30, hjust = 1),
 + panel.background = element_rect(fill = 'white' ))
  allplot
+
+> topsalary <- FemaleWAGP %>%
++ arrange(desc(average)) %>%
++ select(State,average) %>%
++ slice(1:10)
+> topsalary
+Source: local data table [10 x 2]
+
+                   State  average
+                   (chr)    (dbl)
+1  DistrictofColumbia/DC 31610.93
+2            Maryland/MD 23499.32
+3              Alaska/AK 20795.74
+4             NewYork/NY 20092.39
+5       Massachusetts/MA 20064.60
+6           NewJersey/NJ 19478.67
+7            Virginia/VA 19041.39
+8            Colorado/CO 18889.81
+9         Connecticut/CT 18648.82
+10          Minnesota/MN 18215.52
