@@ -3,11 +3,12 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
+library(survey)
 #set up working directory
 setwd("/Users/ruixiongshi/Documents")
 
 #select the columns we need
-colstokeep<-c("PWGTP", "ST", "CIT", "DOUT", "LANX", "SEX", "INDP", "MSP")
+colstokeep<-c("SERIALNO", "SPORDER", "PWGTP", "ST", "CIT", "DOUT", "LANX", "SEX", "INDP", "MSP")
 
 #read data
 housea<-fread("ss13pusa.csv", select=colstokeep)
