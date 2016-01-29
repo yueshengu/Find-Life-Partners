@@ -80,5 +80,6 @@ Salary <- rbind(MaleWAGP,FemaleWAGP)
 
  allplot <- ggplot(Salary,aes(x=State, y=average,fill=factor(gender)))
  allplot <- allplot +ylab("Average Salary") +xlab("State") +ggtitle(paste("Average Salary by State"))
- allplot <- allplot +geom_bar(stat="identity")
+ allplot <- allplot +geom_bar(stat="identity",position="dodge")+theme(axis.text.x = element_text(angle = 30, hjust = 1),
++ panel.background = element_rect(fill = 'white' ))
  allplot
