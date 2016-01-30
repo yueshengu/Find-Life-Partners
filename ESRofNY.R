@@ -78,10 +78,12 @@ visual <- rbind(Malejob1,Femalejob1)
 #plot graph
 AllPlot<- ggplot(visual, aes(x=State, y=value, fill=factor(gender))) +
   geom_bar(stat="identity",position="dodge") + scale_fill_hue(l=40) +
-  ylab("Average emplyoment") + 
-  xlab("state") + ggtitle(paste("Average Employment"," by State")) +
+  ylab("emplyoment ratio") + 
+  xlab("state") + ggtitle(paste("Employment ratio")) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1),
         panel.background = element_rect(fill = 'white' ))
 ggsave(paste("Plot_","_",".png", sep = ""), width = 20, height = 15)
 AllPlot
 ##
+#the employment rate of male in NY is 53.87331%
+#the employment rate of female in NY is 49.809%
