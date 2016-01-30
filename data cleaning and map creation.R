@@ -61,7 +61,7 @@ save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData'
 
 
 pop4<-pop3[,c('PWGTP','AGEP','CIT','COW','SCHL','SEX','WAGP','WKHP','MSP','single','abbr','RAC1P',
-              'FSCHP','name')]
+              'FSCHP','name','NAICSP')]
 
 pop4$CIT[pop4$CIT==1]<-'Born in the U.S'
 pop4$CIT[pop4$CIT==2]<-'Born in Puerto Rico, Guam, the U.S. Virgin Islands, or the Northern Marianas'
@@ -109,15 +109,69 @@ pop4$RAC1P[pop4$RAC1P==8]<-'Other Race'
 pop4$RAC1P[pop4$RAC1P==9]<-'2 or More Races'
 pop4$RAC1P<-factor(pop4$RAC1P)
 
+pop4$NAICS<-as.character(pop4$NAICS)
+pop4$NAICS[pop4$NAICS=='']<-'Too young to work'
+pop4$NAICS[grepl('^1',pop4$NAICSP)]<-'Agriculture'
+pop4$NAICS[grepl('^21',pop4$NAICSP)]<-'Mining'
+pop4$NAICS[grepl('^22',pop4$NAICSP)]<-'Utilities'
+pop4$NAICS[grepl('^23',pop4$NAICSP)]<-'Construction'
+pop4$NAICS[grepl('^3',pop4$NAICSP)]<-'Manufacturing'
+pop4$NAICS[grepl('^42',pop4$NAICSP)]<-'Wholesale'
+pop4$NAICS[grepl('^44|45|4M',pop4$NAICSP)]<-'Retail'
+pop4$NAICS[grepl('^48|49',pop4$NAICSP)]<-'Transportation'
+pop4$NAICS[grepl('^51',pop4$NAICSP)]<-'Information Service'
+pop4$NAICS[grepl('^52|53',pop4$NAICSP)]<-'Finance'
+pop4$NAICS[grepl('^54|55|56',pop4$NAICSP)]<-'Professional Service'
+pop4$NAICS[grepl('^61',pop4$NAICSP)]<-'Education'
+pop4$NAICS[grepl('^621|622|623',pop4$NAICSP)]<-'Medical'
+pop4$NAICS[grepl('^624',pop4$NAICSP)]<-'Care Service'
+pop4$NAICS[grepl('^7',pop4$NAICSP)]<-'Entertainment'
+pop4$NAICS[grepl('^8',pop4$NAICSP)]<-'Repair and Maintenance'
+pop4$NAICS[grepl('^921|923|92M',pop4$NAICSP)]<-'Administration'
+pop4$NAICS[grepl('^928',pop4$NAICSP)]<-'Military'
+pop4$NAICS[grepl('^99',pop4$NAICSP)]<-'Unemployed'
+pop4$NAICS<-factor(pop4$NAICS)
+
 pop4$MSP<-factor(pop4$MSP)
 pop4$single<-factor(pop4$single)
 
 save(pop4,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
 
 
-
 state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
+
+
+# look at industry of sugar daddys in NY and CA
+sugardaddyNYCA<-pop4[pop4$single=='Single'&pop4$SEX=='Male'&!is.na(pop4$WAGP)&pop4$WAGP>=10000&
+                       pop4$abbr%in%c('CA','NY'),]
+sugardaddyNYCA2<-aggregate(sugardaddyNYCA$PWGTP,by=list(sugardaddyNYCA$abbr,sugardaddyNYCA$NAICS),FUN=sum)
+names(sugardaddyNYCA2)<-c('State','Industry','CountWithWeight')
+sugardaddyNYCA3<-merge(sugardaddyNYCA2,state,by='State',all.x=T)
+sugardaddyNYCA3$Perc<-round(sugardaddyNYCA3$Count/sugardaddyNYCA3$TotalCount*100,2)
+sugardaddyNYCA4<-merge(sugardaddyNYCA3,actualPopulation,by='StateName',all.x=T)
+sugardaddyNYCA4$ExpectedCount2015<-round(sugardaddyNYCA4$Perc*sugardaddyNYCA4$ActualPop/100,0)
+
+# look at industry of girl subset in NY and CA
+pgirlNYCA<-pop4[pop4$single=='Single'&pop4$SEX=='Female'&pop4$AGEP<30&
+                  pop4$SCHL%in%c("Bachelor's degree",'Doctorate degree',"Master's degree",
+                                 "Professional degree beyond a bachelor's degree")&
+                  !pop4$COW%in%c('Working without pay in family business or farm',
+                                 'Unemployed and last worked 5 years ago or earlier',
+                                 'Less than 16 years old')&
+                  pop4$abbr%in%c('CA','NY'),]
+pgirlNYCA2<-aggregate(pgirlNYCA$PWGTP,by=list(pgirlNYCA$abbr,pgirlNYCA$NAICS),FUN=sum)
+names(pgirlNYCA2)<-c('State','Industry','CountWithWeight')
+pgirlNYCA3<-merge(pgirlNYCA2,state,by='State',all.x=T)
+pgirlNYCA3$Perc<-round(pgirlNYCA3$Count/pgirlNYCA3$TotalCount*100,3)
+pgirlNYCA4<-merge(pgirlNYCA3,actualPopulation,by='StateName',all.x=T)
+pgirlNYCA4$ExpectedCount2015<-round(pgirlNYCA4$Perc*pgirlNYCA4$ActualPop/100,0)
+
+write.csv(pgirlNYCA4,'C:/Users/ygu/Desktop/columbia/cycle1-1/pgirlNYCA.csv')
+write.csv(sugardaddyNYCA4,'C:/Users/ygu/Desktop/columbia/cycle1-1/sugardaddyNYCA.csv')
+
+
+
 
 # Plotting sugar daddy
 sugarDaddy<-pop3[pop3$single=='Single'&pop3$SEX==1&!is.na(pop3$WAGP)&pop3$WAGP>=10000,]

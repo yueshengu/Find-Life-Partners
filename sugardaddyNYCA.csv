@@ -1,0 +1,37 @@
+"","StateName","State","Industry","CountWithWeight","TotalCountWithWeight","Perc","ActualPop","ExpectedCount2015"
+"1","California","CA","Administration",109123,38332521,0.28,39144818,109605
+"2","California","CA","Information Service",130904,38332521,0.34,39144818,133092
+"3","California","CA","Agriculture",94011,38332521,0.25,39144818,97862
+"4","California","CA","Manufacturing",346435,38332521,0.9,39144818,352303
+"5","California","CA","Care Service",33725,38332521,0.09,39144818,35230
+"6","California","CA","Medical",172978,38332521,0.45,39144818,176152
+"7","California","CA","Construction",313626,38332521,0.82,39144818,320988
+"8","California","CA","Military",82816,38332521,0.22,39144818,86119
+"9","California","CA","Education",165639,38332521,0.43,39144818,168323
+"10","California","CA","Mining",11491,38332521,0.03,39144818,11743
+"11","California","CA","Entertainment",396080,38332521,1.03,39144818,403192
+"12","California","CA","Professional Service",464896,38332521,1.21,39144818,473652
+"13","California","CA","Finance",217730,38332521,0.57,39144818,223125
+"14","California","CA","Repair and Maintenance",145043,38332521,0.38,39144818,148750
+"15","California","CA","Retail",478291,38332521,1.25,39144818,489310
+"16","California","CA","Transportation",195904,38332521,0.51,39144818,199639
+"17","California","CA","Utilities",34509,38332521,0.09,39144818,35230
+"18","California","CA","Wholesale",111018,38332521,0.29,39144818,113520
+"19","New York","NY","Administration",75960,19651127,0.39,19795791,77204
+"20","New York","NY","Agriculture",11177,19651127,0.06,19795791,11877
+"21","New York","NY","Care Service",26069,19651127,0.13,19795791,25735
+"22","New York","NY","Construction",171875,19651127,0.87,19795791,172223
+"23","New York","NY","Education",116461,19651127,0.59,19795791,116795
+"24","New York","NY","Mining",1419,19651127,0.01,19795791,1980
+"25","New York","NY","Entertainment",212229,19651127,1.08,19795791,213795
+"26","New York","NY","Professional Service",247305,19651127,1.26,19795791,249427
+"27","New York","NY","Finance",193745,19651127,0.99,19795791,195978
+"28","New York","NY","Repair and Maintenance",75085,19651127,0.38,19795791,75224
+"29","New York","NY","Information Service",63228,19651127,0.32,19795791,63347
+"30","New York","NY","Retail",218306,19651127,1.11,19795791,219733
+"31","New York","NY","Manufacturing",145781,19651127,0.74,19795791,146489
+"32","New York","NY","Transportation",97945,19651127,0.5,19795791,98979
+"33","New York","NY","Medical",108703,19651127,0.55,19795791,108877
+"34","New York","NY","Utilities",12969,19651127,0.07,19795791,13857
+"35","New York","NY","Military",20874,19651127,0.11,19795791,21775
+"36","New York","NY","Wholesale",49847,19651127,0.25,19795791,49489
