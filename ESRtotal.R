@@ -10,58 +10,43 @@ pusa <- fread("~/desktop/project1/csv_pus/ss13pusa.csv", select = cols)
 pusb <- fread("~/desktop/project1/csv_pus/ss13pusb.csv", select = cols)
 pus<- rbind(pusa, pusb)
 
-Male <- pus %>%
+#########
+Total<- pus %>%
   na.omit()%>%
   filter(MSP %in% c(3,4,5,6)) %>%
-  filter(SEX %in% c(1)) %>%
-  group_by(ST) %>% ##group by state
-  summarise(count=sum(PWGTP))%>%
-  
-  Male
+  group_by(SEX) %>% ##group by state
+  summarise(count=sum(PWGTP))
+Total
 
-Malejob<- pus %>%
-  na.omit() %>%
+Employment<- pus %>% 
+na.omit() %>%
   filter(MSP %in% c(3,4,5,6)) %>%
   filter(ESR %in% c(1)) %>%
-  filter(SEX %in% c(1)) %>% ## select male
-  group_by(ST) %>% ##group by state
-  summarise(count=sum(PWGTP))%>%
-  
-  Malejob
-
-
-Female <- pus %>%
-  na.omit()%>%
-  filter(MSP %in% c(3,4,5,6)) %>%
-  filter(SEX %in% c(2)) %>%
-  group_by(ST) %>% ##group by state
+  group_by(SEX) %>% ##group by state
   summarise(count=sum(PWGTP))
-Female
+Employment
 
-Femalejob<- pus %>%
-  na.omit() %>%
-  filter(MSP %in% c(3,4,5,6)) %>%
-  filter(ESR %in% c(1)) %>%
-  filter(SEX %in% c(2)) %>% ## select male
-  group_by(ST) %>% ##group by state
-  summarise(count=sum(PWGTP))
-Femalejob
+##define the gender code
+genderCode = "SEX,gender
+1,Male
+2,Female"
+gendercode <- fread(genderCode)
+gendercode
 
+#Visualize   them here
+job<- mutate(Employment, value = Employment$count/Total$count*100)
+job<- left_join(job, gendercode, by.x=c("SEX"))
+job
+#     SEX gender  count    value
+#(int)  (chr)    (int)    (dbl)
+#1     1   Male 32559654 53.79506
+#2     2 Female 34225477 50.11657
+> 
+gender<- factor(job$gender, levels = unique(job$gender))
 
-Malejob1<- mutate(Male, value = Malejob$count/Male$count*100)
-Malejob1
-Femalejob1<- mutate(Femalejob, value = Femalejob$count/Female$count*100)
-Femalejob1
-
-# add gender to data
-Malejob1$gender <- c("Male")
-Femalejob1$gender <- c("Female")
-# concat data
-visual <- rbind(Malejob1,Femalejob1)
-visual
 
 #plot graph
-AllPlot<- ggplot(visual, aes(x=gender, y=value, fill=factor(gender))) +
+AllPlot<- ggplot(job, aes(x=gender, y=value, fill=factor(gender))) +
   geom_bar(stat="identity",position="dodge") + scale_fill_hue(l=40) +
   ylab("emplyoment ratio") + 
   xlab("gender") + ggtitle(paste("Employment ratio")) +
@@ -69,4 +54,7 @@ AllPlot<- ggplot(visual, aes(x=gender, y=value, fill=factor(gender))) +
         panel.background = element_rect(fill = 'white' ))
 ggsave(paste("Plot_","_",".png", sep = ""), width = 20, height = 15)
 AllPlot
+###
+# the employment ratio of male in all states is 53.79506%
+# the employment ratio of female in all states is 50.11657%
 
