@@ -5,7 +5,15 @@ date: "January 27, 2016"
 output: html_document
 ---
 
-<<<<<<< HEAD
+# 1 Introduction
+
+<p>In this script we are interested to see that as a graduate master student, assume I am free to choose the place to work, where is the best state to meet my life partner? (we look for a suitable husband/wife not from mentally match but focus on some reality consideration)
+
+Our goal is end up with a serach engine that can show you the best state based on your preference of life partner.
+
+So let's start our story here, I am a young lady that will finish my master program on Dec, where should I work?</p>
+
+### 1.1 Libraries we need
 ```{r eval=FALSE}
 library(rCharts)
 library(htmltab)
@@ -18,18 +26,15 @@ library(data.table)
 
 
 
-Load data
+### 1.2 Load data 
 ```{r eval=FALSE}
 actualPopulation<-
   htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
 pop1<-fread('./csv_pus/ss13pusa.csv')
 pop2<-fread('./csv_pus/ss13pusb.csv')
 statename<-read.csv('./cycle1-1/data/statename.csv')
-=======
-```{r}
-plot(cars)
->>>>>>> origin/master
 ```
+
 
 Clean data
 ```{r eval=FALSE}
@@ -122,11 +127,7 @@ pop4$RAC1P<-factor(pop4$RAC1P)
 pop4$MSP<-factor(pop4$MSP)
 pop4$single<-factor(pop4$single)
 
-<<<<<<< HEAD
-=======
-```{r, echo=FALSE}
-head(cars)
->>>>>>> origin/master
+
 ```
 
 
