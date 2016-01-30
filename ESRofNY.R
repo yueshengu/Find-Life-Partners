@@ -10,6 +10,7 @@ pusa <- fread("~/desktop/project1/csv_pus/ss13pusa.csv", select = cols)
 pusb <- fread("~/desktop/project1/csv_pus/ss13pusb.csv", select = cols)
 pus<- rbind(pusa, pusb)
 
+##Select the data
 Male <- pus %>%
   na.omit()%>%
   filter(MSP %in% c(3,4,5,6)) %>%
@@ -52,10 +53,20 @@ stateCode = "ST,State
 statecode <- fread(stateCode)
 statecode
 
-Malejob1<- mutate(Male, value = Malejob$count/Male$count*100)
+Malejob1<- mutate(Malejob, value = Malejob$count/Male$count*100)
 Malejob1
+Malejob1[33]
+#   ST   count    value
+#(int)   (int)    (dbl)
+#1  36  2157732   53.87331
+#the employment rate of male in NY is 53.87331%
 Femalejob1<- mutate(Femalejob, value = Femalejob$count/Female$count*100)
 Femalejob1
+Femalejob1[33]
+#    ST   count  value
+#(int)   (int)  (dbl)
+#1   36 2369188  49.809
+#the employment rate of female in NY is 49.809%
 # join state code in table
 Malejob1 <- left_join(Malejob1 , statecode, by.x=c("ST"))
 Femalejob1 <- left_join(Femalejob1 , statecode, by.x=c("ST"))
