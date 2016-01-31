@@ -1,0 +1,238 @@
+---
+
+output: html_document
+---
+
+```{r include=FALSE}
+library(choroplethr)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+
+```
+
+#Data cleaning
+```{r include=FALSE}
+#read data from population dataset
+colsToKeep <- c("ESR", "SCHOL", "WAGP","ST","SEX","MSP","AGEP","PWGTP","OCCP")
+data1 <- fread("/Users/yiliu/Desktop/untitled folder/ss13pusa.csv", select=colsToKeep )
+data2 <- fread("/Users/yiliu/Desktop/untitled folder/ss13pusb.csv", select=colsToKeep )
+popudata <- rbind(data1, data2)
+```
+
+#1. Salary Distribution
+```{r}
+popudata <- popudata %>%
+  na.omit()%>%
+  filter(MSP %in% c(3,4,5,6))
+```
+
+```{r}
+#break the WAGP (lower=0, upper=100000, by=20000)
+popu <- popudata
+popu$WAGP[popu$WAGP %in% c(0:20000)] <- "0-2"
+popu$WAGP[popu$WAGP %in% c(20000:40000)] <- "2-4"
+popu$WAGP[popu$WAGP %in% c(40000:60000)] <- "4-6"
+popu$WAGP[popu$WAGP %in% c(60000:80000)] <- "6-8"
+popu$WAGP[popu$WAGP %in% c(80000:100000)] <- "8-10"
+popu$WAGP[popu$WAGP %in% c(100000:1000000)] <- "over 10"
+```
+
+```{r}
+#sum the weights
+popu <- summarise(popu,WAGP=WAGP,SEX=SEX,PWGTP=PWGTP)
+popu <- popu[, lapply(.SD,sum), by=list(SEX,WAGP)]
+#rename the SEX
+popu$SEX[popu$SEX==1] <- "male"
+popu$SEX[popu$SEX==2] <- "female"
+```
+Plot bar chart for count VS salary
+```{r}
+#plot chart for Count VS Salary
+salaryplot <- ggplot(popu,aes(x=WAGP, y=PWGTP,fill=factor(SEX))) +geom_bar(stat="identity",position="dodge")
+salaryplot <- salaryplot +ylab("count")+xlab("Annual Salary (in 10K)")+ggtitle("Salary for Single")
+salaryplot
+```
+<p align="center"><img src="figs/Yi Liu/SalaryDistn.png" ></p>
+
+#2. Compare Salary in Gender by States
+
+```{r}
+#state the ST codes
+stateCode = "ST,State
+ 1,Alabama/AL
+2,Alaska/AK
+4,Arizona/AZ
+5,Arkansas/AR
+6,California/CA
+8,Colorado/CO
+9,Connecticut/CT
+10,Delaware/DE
+11,DistrictofColumbia/DC
+12,Florida/FL
+13,Georgia/GA
+15,Hawaii/HI
+16,Idaho/ID
+17,Illinois/IL
+18,Indiana/IN
+19,Iowa/IA
+20,Kansas/KS
+21,Kentucky/KY
+22,Louisiana/LA
+23,Maine/ME
+24,Maryland/MD
+25,Massachusetts/MA
+26,Michigan/MI
+27,Minnesota/MN
+28,Mississippi/MS
+29,Missouri/MO
+30,Montana/MT
+31,Nebraska/NE
+32,Nevada/NV
+33,NewHampshire/NH
+34,NewJersey/NJ
+35,NewMexico/NM
+36,NewYork/NY
+37,NorthCarolina/NC
+38,NorthDakota/ND
+39,Ohio/OH
+40,Oklahoma/OK
+41,Oregon/OR
+42,Pennsylvania/PA
+44,RhodeIsland/RI
+45,SouthCarolina/SC
+46,SouthDakota/SD
+47,Tennessee/TN
+48,Texas/TX
+49,Utah/UT
+50,Vermont/VT
+51,Virginia/VA
+53,Washington/WA
+54,WestVirginia/WV
+55,Wisconsin/WI
+56,Wyoming/WY
+72,PuertoRico/PR"
+statecode <- fread(stateCode)
+```
+
+```{r}
+Male <- popudata %>%
+  filter(SEX %in% c(1)) %>%
+  group_by(ST)
+Female <- popudata %>%
+  filter(SEX %in% c(2)) %>%
+  group_by(ST)
+#use the weight calculating average annual salary for single male and female
+FemaleWAGP <- summarise(Female, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
+MaleWAGP <- summarise(Male, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
+#creat new dataset
+MaleWAGP <- left_join(MaleWAGP , statecode, by.x=c("ST"))
+FemaleWAGP <- left_join(FemaleWAGP , statecode, by.x=c("ST"))
+MaleWAGP$gender <- c("Male")
+FemaleWAGP$gender <- c("Female")
+Salary <- rbind(MaleWAGP,FemaleWAGP)
+```
+Plot bar chart in Gender by States
+```{r}
+#plot Average Annual Salary for Male/Female by States
+AverageSal <- ggplot(Salary,aes(x=State, y=average,fill=factor(gender)))+geom_bar(stat="identity",position="dodge")
+AverageSal <- AverageSal +ylab("Average Salary") +xlab("State") +ggtitle(paste("Average Salary by State")) 
+AverageSal <- AverageSal +theme(axis.text.x = element_text(angle = 30, hjust = 1),panel.background = element_rect(fill = 'white' ))
+AverageSal
+```
+
+
+<p align="center"><img src="figs/Yi Liu/AvebyST.png" ></p>
+
+#3. Male with salary over $100000 in CA and NY
+
+```{r}
+selectpopu <- popudata %>%
+  filter(ST %in% c(6,36)) %>%
+  filter(WAGP > 100000)
+```
+
+```{r include=FALSE}
+selectpopu$OCCP[selectpopu$OCCP %in% c(0:431)] <- "MAN"
+selectpopu$OCCP[selectpopu$OCCP %in% c(432:741)] <- "BUS"
+selectpopu$OCCP[selectpopu$OCCP %in% c(742:951)] <- "FIN"
+selectpopu$OCCP[selectpopu$OCCP %in% c(951:1241)] <- "CMM"
+selectpopu$OCCP[selectpopu$OCCP %in% c(1242:1561)] <- "ENG"
+selectpopu$OCCP[selectpopu$OCCP %in% c(1562:1966)] <- "SCI"
+selectpopu$OCCP[selectpopu$OCCP %in% c(1967:2061)] <- "CMS"
+selectpopu$OCCP[selectpopu$OCCP %in% c(2062:2161)] <- "LGL"
+selectpopu$OCCP[selectpopu$OCCP %in% c(2162:2551)] <- "EDU"
+selectpopu$OCCP[selectpopu$OCCP %in% c(2552:2921)] <- "ENT"
+selectpopu$OCCP[selectpopu$OCCP %in% c(2922:3541)] <- "MED"
+selectpopu$OCCP[selectpopu$OCCP %in% c(3542:3656)] <- "HLS"
+selectpopu$OCCP[selectpopu$OCCP %in% c(3657:3956)] <- "PRT"
+selectpopu$OCCP[selectpopu$OCCP %in% c(3957:4151)] <- "EAT"
+selectpopu$OCCP[selectpopu$OCCP %in% c(4152:4251)] <- "CLN"
+selectpopu$OCCP[selectpopu$OCCP %in% c(4252:4651)] <- "PRS"
+selectpopu$OCCP[selectpopu$OCCP %in% c(4652:4966)] <- "SAL"
+selectpopu$OCCP[selectpopu$OCCP %in% c(4967:5941)] <- "OFF"
+selectpopu$OCCP[selectpopu$OCCP %in% c(5942:6131)] <- "FFF"
+selectpopu$OCCP[selectpopu$OCCP %in% c(6132:6766)] <- "CON"
+selectpopu$OCCP[selectpopu$OCCP %in% c(6767:6941)] <- "EXT"
+selectpopu$OCCP[selectpopu$OCCP %in% c(6942:7631)] <- "RPR"
+selectpopu$OCCP[selectpopu$OCCP %in% c(7632:8966)] <- "PRD"
+selectpopu$OCCP[selectpopu$OCCP %in% c(8967:9751)] <- "TRN"
+selectpopu$OCCP[selectpopu$OCCP %in% c(9752:9831)] <- "MIL"
+
+```
+
+Average Salary by Occupation
+
+For CA
+```{r}
+selectCA <- selectpopu %>%
+  filter(SEX==1) %>%
+  filter(ST==6) %>%
+  group_by(OCCP)
+selectCA <-summarise(selectCA,average = sum(as.numeric(WAGP*PWGTP))/(sum(PWGTP)*1000))
+```
+Bar chat for Average Salary by Occupation in CA
+```{r}
+CA <- ggplot(selectCA,aes(x=OCCP, y=average))
+CA <-CA+geom_bar(stat="identity",position="dodge",width=0.5,color="#0066CC",fill="#0066CC")
+CA <- CA+theme(axis.text.x=element_text(angle=30, hjust=1),panel.background=element_rect(fill = 'white' ))
+CA <- CA +ylab("Average Salary (in K)") +xlab("Occupation") +ggtitle(paste("Average Salary by Occupation in CA")) 
+CA
+```
+<p align="center"><img src="figs/Yi Liu/CA.png" ></p>
+Top 10 Occupations with highest Salary (Salary in $k)
+```{r}
+topCA <- selectCA %>%
+  arrange(desc(average))%>%
+  select(OCCP,average)%>%
+  slice(1:10)
+topCA
+```
+<p align="center"><img src="figs/Yi Liu/CA10.png" ></p>
+
+For NY
+```{r}
+selectNY <- selectpopu %>%
+  filter(SEX==1) %>%
+  filter(ST==36) %>%
+  group_by(OCCP)
+selectNY <-summarise(selectNY,average = sum(as.numeric(WAGP*PWGTP))/(sum(PWGTP)*1000))
+```
+Bar chat for Average Salary by Occupation in NY
+```{r}
+NY <- ggplot(selectNY,aes(x=OCCP, y=average))
+NY <-NY+geom_bar(stat="identity",position="dodge",width=0.5,color="#0066CC",fill="#0066CC")
+NY <-NY+theme(axis.text.x=element_text(angle=30, hjust=1),panel.background=element_rect(fill = 'white' ))
+NY <-NY +ylab("Average Salary (in K)") +xlab("Occupation") +ggtitle(paste("Average Salary by Occupation in NY")) 
+NY
+```
+<p align="center"><img src="figs/Yi Liu/NY.png" ></p>
+Top 10 Occupations with highest Salary (Salary in $k)
+```{r}
+topNY <- selectNY %>%
+  arrange(desc(average))%>%
+  select(OCCP,average)%>%
+  slice(1:10)
+topNY
+```
+<p align="center"><img src="figs/Yi Liu/NY10.png" ></p>
