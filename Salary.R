@@ -40,8 +40,8 @@ popudata$SEX[popudata$SEX==1] <- "male"
 popudata$SEX[popudata$SEX==2] <- "female"
 
 #plot chart for Count VS Salary
-salaryplot <- ggplot(popudata,aes(x=WAGP, y=PWGTP,fill=factor(SEX)))+allplot +geom_bar(stat="identity",position="dodge")
-salaryplot <- salaryplot +ylab("count")+xlab("Annual Salary (in K)")+ggtitle("Salary for Single")
+salaryplot <- ggplot(popudata,aes(x=WAGP, y=PWGTP,fill=factor(SEX))) +geom_bar(stat="identity",position="dodge")
+salaryplot <- salaryplot +ylab("count")+xlab("Annual Salary (in 10K)")+ggtitle("Salary for Single")
 salaryplot
 
 
