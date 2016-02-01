@@ -3,24 +3,49 @@ library(choroplethr)
 library(dplyr)
 library(ggplot2)
 library(data.table)
-colsToKeep <- c("ESR", "SCHOL", "WAGP","ST","SEX","MSP","PWGTP")
 
+#read data from population dataset
+colsToKeep <- c("ESR", "SCHOL", "WAGP","ST","SEX","MSP","PWGTP")
 data1 <- fread("/Users/yiliu/Desktop/untitled folder/ss13pusa.csv", select=colsToKeep )
 data2 <- fread("/Users/yiliu/Desktop/untitled folder/ss13pusb.csv", select=colsToKeep )
 popudata <- rbind(data1, data2)
 
+#filter the data
+popudata <- popudata %>%
+  na.omit()%>%
+  filter(MSP %in% c(3,4,5,6))
+
 Male <- popudata %>%
-  + na.omit() %>%
-  + filter(MSP %in% c(3,4,5,6)) %>%
-  + filter(SEX %in% c(1)) %>%
-  + group_by(ST)
+  filter(SEX %in% c(1)) %>%
+  group_by(ST)
 
 Female <- popudata %>%
-  + na.omit()%>%
-  + filter(MSP %in% c(3,4,5,6)) %>%
-  + filter(SEX %in% c(2)) %>%
-  + group_by(ST)
+  filter(SEX %in% c(2)) %>%
+  group_by(ST)
 
+#break the WAGP (lower=0, upper=100000, by=20000)
+popudata$WAGP[popudata$WAGP %in% c(0:20000)] <- "0-2"
+popudata$WAGP[popudata$WAGP %in% c(20000:40000)] <- "2-4"
+popudata$WAGP[popudata$WAGP %in% c(40000:60000)] <- "4-6"
+popudata$WAGP[popudata$WAGP %in% c(60000:80000)] <- "6-8"
+popudata$WAGP[popudata$WAGP %in% c(80000:100000)] <- "8-10"
+popudata$WAGP[popudata$WAGP %in% c(100000:1000000)] <- "over 10"
+
+#sum the weights
+popudata<- summarise(popudata,WAGP=WAGP,SEX=SEX,PWGTP=PWGTP)
+popudata <- popudata[, lapply(.SD,sum), by=list(SEX,WAGP)]
+
+#rename the SEX
+popudata$SEX[popudata$SEX==1] <- "male"
+popudata$SEX[popudata$SEX==2] <- "female"
+
+#plot chart for Count VS Salary
+salaryplot <- ggplot(popudata,aes(x=WAGP, y=PWGTP,fill=factor(SEX))) +geom_bar(stat="identity",position="dodge")
+salaryplot <- salaryplot +ylab("count")+xlab("Annual Salary (in 10K)")+ggtitle("Salary for Single")
+salaryplot
+
+
+#state the ST codes
 stateCode = "ST,State
  1,Alabama/AL
 2,Alaska/AK
@@ -75,6 +100,8 @@ stateCode = "ST,State
 56,Wyoming/WY
 72,PuertoRico/PR"
 statecode <- fread(stateCode)
+
+#use the weight calculating average annual salary for single male and female
 FemaleWAGP <- summarise(Female, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
 MaleWAGP <- summarise(Male, average=sum(as.numeric(WAGP*PWGTP))/sum(PWGTP))
 
@@ -84,10 +111,13 @@ MaleWAGP$gender <- c("Male")
 FemaleWAGP$gender <- c("Female")
 
 Salary <- rbind(MaleWAGP,FemaleWAGP)
-allplot <- ggplot(Salary,aes(x=State, y=average,fill=factor(gender)))
-allplot <- allplot +ylab("Average Salary")
-allplot <- allplot +xlab("State")
-allplot <- allplot +geom_bar(stat="identity",position="dodge")
-allplot <- allplot +ggtitle(paste("Average Salary by State")) 
-allplot <- allplot +theme(axis.text.x = element_text(angle = 30, hjust = 1),panel.background = element_rect(fill = 'white' ))
-allplot
+
+#plot Average Annual Salary for Male/Female by States
+AverageSal <- ggplot(Salary,aes(x=State, y=average,fill=factor(gender)))+geom_bar(stat="identity",position="dodge")
+AverageSal <- AverageSal +ylab("Average Salary") +xlab("State") +ggtitle(paste("Average Salary by State")) 
+AverageSal <- AverageSal +theme(axis.text.x = element_text(angle = 30, hjust = 1),panel.background = element_rect(fill = 'white' ))
+AverageSal
+
+
+
+

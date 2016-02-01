@@ -1,0 +1,398 @@
+---
+title: "Finding Life Partner"
+author: "Ruixiong Shi, Danmo Wang, Liu Yi, Rong Wang, Yue Shen Gu"
+date: "January 27, 2016"
+output: html_document
+---
+
+# 1 Introduction
+
+<p>In this script we are interested to see that as a graduate master student, assume I am free to choose the place to work, where is the best state to meet my life partner? (we look for a suitable husband/wife not from mentally match but focus on more reality consideration)
+
+Our ultimate goal is end up with a serach engine that can show you the best state based on your preference of life partner.
+
+So let's start our story here, I am a young lady that will finish my master program on Dec, where should I work?</p>
+
+### 1.1 Libraries we need
+
+```{r message=FALSE}
+library(rCharts)
+library(htmltab)
+library(rMaps)
+library(rCharts)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+```
+
+### 1.2 Load data 
+
+```{r}
+#select the columns we need
+colstokeep<-c("PWGTP", "ST", "SCHL", "AGEP", "SEX", "ESR", "MSP", "WAGP")
+pop1<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv', select = colstokeep)
+pop2<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv',select = colstokeep)
+statename<-read.csv('C:/Users/ygu/Desktop/columbia/cycle1-1/data/statename.csv')
+# combine pops
+pop<-rbind(pop1,pop2)
+```
+
+### 1.3 How many are they?
+
+First of all I want to know and to compare the number of single women and men all over the state (including divorced, widowed and separated people)
+
+The first thing that come into my mind is I need to understand about some information about both single ladies (understand your competitors) and single men.
+
+```{r}
+#excluding married people, and missing values
+sindata<-tbl_df(pop)
+sindata<-sindata %>%
+  na.omit() %>%
+  filter(MSP %in% c(3,4,5,6)) %>% #code 1&2 are married
+  group_by(SEX)
+```
+
+```{r echo=FALSE}
+#transfer the code 1&2 into male&female
+sindata$SEX[sindata$SEX==1]<-"Male"
+sindata$SEX[sindata$SEX==2]<-"Female"
+
+#Compute the weighted count for single people and convert it to percentage
+weisingledata<-sindata %>% count(SEX, wt=PWGTP)
+weisingledata$n <- weisingledata$n/sum(sindata$PWGTP)
+
+#Draw the graph of single people by gender
+genderplot<-ggplot(weisingledata,aes(x=SEX, y=n, fill=as.factor(SEX)))+geom_bar(stat="identity")+ggtitle("Comparing single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Percentage of people") 
+genderplot
+
+genderageplot<-ggplot(sindata,aes(x=SEX, y=AGEP, fill=as.factor(SEX)))+geom_boxplot()+ggtitle("Comparing age of single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Age") + scale_y_continuous(limits=c(0,100))
+genderageplot
+```
+
+<p>We can see that single female is slightly more than males but half of single female are aobve 45 yeas old.</p>
+
+<p>then we do a quick math:</p>
+
+```{r}
+#Compute the percentage of weighted single people over total population
+sum(sindata$PWGTP)/sum(pop$PWGTP)
+```
+
+Great! about 40% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
+
+<b><i>The next question is, how a nice husband is defined?</i>.</b>
+
+### 1.4 How about the employment status, income and education level for them?
+
+<p>To my point of view, I do not want to marry a man with a very low income. He should at least have a job and a college degree.
+
+For the next part, I want to know about these information for the single population.</p> 
+
+<b>1.4.1 Employment status</b>
+
+```{r echo = FALSE}
+Total<- pop %>%
+  na.omit()%>%
+  filter(MSP %in% c(3,4,5,6)) %>% #select person who is single
+  group_by(SEX) %>% 
+  summarise(count=sum(PWGTP))
+```
+
+```{r}
+Employment<- pop %>% 
+na.omit() %>%
+  filter(MSP %in% c(3,4,5,6)) %>%
+  filter(ESR %in% c(3)) %>% # select person only marked as unemployed
+  group_by(SEX) %>% #group by sex
+  summarise(count=sum(PWGTP))
+```
+
+```{r echo=FALSE}
+##define the gender code
+genderCode = "SEX,gender
+1,Male
+2,Female"
+gendercode <- fread(genderCode)
+
+#Visualize   them here
+job<- mutate(Employment, value = Employment$count/Total$count*100)
+job<- left_join(job, gendercode, by.x=c("SEX"))
+
+#     SEX gender  count    value
+#(int)  (chr)    (int)    (dbl)
+#1     1   Male 32559654 53.79506
+#2     2 Female 34225477 50.11657
+
+gender<- factor(job$gender, levels = unique(job$gender))
+
+#plot graph
+AllPlot<- ggplot(job, aes(x=gender, y=value, fill=factor(gender))) +
+  geom_bar(stat="identity",position="dodge") + scale_fill_hue(l=40) +
+  ylab("emplyoment ratio") + 
+  xlab("gender") + ggtitle(paste("Unemployment ratio")) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) 
+AllPlot
+```
+
+<p> The good news 70% single women are unemployed, so in that sense, I am in top 30% uh?
+but the bad news is about 75% single men do not have a job when the survey was conducted, unbelievable! </p>
+
+<b>1.4.2 Income level</b>
+
+```{r echo=FALSE}
+#filter the data
+popudata <- pop %>%
+  na.omit()%>%
+  filter(MSP %in% c(3,4,5,6))
+```
+
+<p>I break their income into 6 levels and calculate the weighted count</p>
+
+```{r}
+#break the WAGP (lower=0, upper=100000, by=20000)
+popudata$WAGP[popudata$WAGP %in% c(0:20000)] <- "0-20k"
+popudata$WAGP[popudata$WAGP %in% c(20000:40000)] <- "20-40k"
+popudata$WAGP[popudata$WAGP %in% c(40000:60000)] <- "40-60k"
+popudata$WAGP[popudata$WAGP %in% c(60000:80000)] <- "60-80k"
+popudata$WAGP[popudata$WAGP %in% c(80000:100000)] <- "80-100k"
+popudata$WAGP[popudata$WAGP %in% c(100000:1000000)] <- "over 100k"
+
+#sum the weights
+popudata<- summarise(popudata,WAGP=WAGP,SEX=SEX,PWGTP=PWGTP)
+popudata <- popudata[, lapply(.SD,sum), by=list(SEX,WAGP)]
+```
+```{r echo=FALSE}
+#rename the SEX
+popudata$SEX[popudata$SEX==1] <- "male"
+popudata$SEX[popudata$SEX==2] <- "female"
+
+#plot chart for Count VS Salary
+salaryplot <- ggplot(popudata,aes(x=WAGP, y=PWGTP,fill=factor(SEX)))+geom_bar(stat="identity",position="dodge")
+salaryplot <- salaryplot +ylab("count")+xlab("Annual Salary")+ggtitle("Salary for Single") 
+salaryplot
+```
+
+<p>From the above plot, the low paid group(under 20k annual), for both female and male, dominate all other groups.</p>
+
+<b>1.4.3 Education level</b>
+
+```{r echo=FALSE}
+per_edu<-
+  pop%>%
+  na.omit() %>%
+  filter(MSP %in% c(3,4,5,6)) #select person who is single
+```
+
+Change the SCHL codes into different college degrees
+
+```{r echo=FALSE}
+per_edu$SCHL[per_edu$SCHL < 20] <- "No degree"
+per_edu$SCHL[per_edu$SCHL == 20] <- "Associated degree"
+per_edu$SCHL[per_edu$SCHL == 21] <- "Bachelor's degree"
+per_edu$SCHL[per_edu$SCHL == 22] <- "Master's degree"
+per_edu$SCHL[per_edu$SCHL == 23] <- "Professional degree beyond a bachelor's degree"
+per_edu$SCHL[per_edu$SCHL == 24] <- "Doctorate degree"
+```
+```{r echo=FALSE}
+per_edu<- summarise(per_edu,SCHL=SCHL,SEX=SEX,PWGTP=PWGTP)
+per_edu<- per_edu[, lapply(.SD,sum), by=list(SEX,SCHL)]
+
+per_edu$SEX[per_edu$SEX==1] <- "male"
+per_edu$SEX[per_edu$SEX==2] <- "female"
+#arrange(per_edu,SCHL)
+
+eduplot <- ggplot(per_edu,aes(x=SCHL, y=PWGTP,fill=factor(SEX)))+geom_bar(stat="identity",position="dodge")
+eduplot <- eduplot +ylab("count")+xlab("Levels of ducation")+ggtitle("Education of Single") + scale_x_discrete(limits=c("No degree","Associated degree","Bachelor's degree","Master's degree", "Professional degree beyond a bachelor's degree", "Doctorate degree")) + theme(axis.text.x=element_text(angle=20,hjust=1))
+eduplot
+```
+
+<p>After reading the plots above, I become really nervous about looking for my ideal husband. If I randomly pick a man from US single gentlemen then most of time he is not going to be a perfect husband for me. </p>
+
+<p>Please note that, even you are a young gentlement who is looking for a nice wife, your situation is not optimistic.</p>
+
+#2 In which states can I find him/her?
+
+<p>As we have seen, finding a good parnter is an intense competition actually, if I want to stand out, I must have some tricks. Here is the trick: I am going to locate one state which has the largest number of my "good" husbands. Also I decide to lower my boyfriend criterion: </p>
+
+<i>"I want him to have an annual income over 100K, I do not care his age, educaiton or whether he has married before. Basically I just want a sugar daddy." Women is fickle and you know it</i>
+
+<b>2.1 Some library change for this part</b>
+
+```{r}
+detach(package:dplyr,unload=T)
+library(plyr)# these two packages are clashed in some functions
+```
+```{r echo=FALSE}
+actualPopulation<-
+  htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
+actualPopulation<-actualPopulation[1:52,3:4]
+names(actualPopulation)<-c('StateName','ActualPop')
+actualPopulation$StateName<-substring(actualPopulation$StateName,3)
+actualPopulation$StateName[48]<-substring(actualPopulation$StateName[48],3)
+actualPopulation$ActualPop<-as.numeric(gsub(',','',actualPopulation$ActualPop))
+
+# make MSP more readable
+pop$MSP[is.na(pop$MSP)]<-'Under 15'
+pop$MSP[pop$MSP==1]<-'Now married, spouse present'
+pop$MSP[pop$MSP==2]<-'Now married, spouse absent'
+pop$MSP[pop$MSP==3]<-'Widowed'
+pop$MSP[pop$MSP==4]<-'Divorced'
+pop$MSP[pop$MSP==5]<-'Separated'
+pop$MSP[pop$MSP==6]<-'Never married'
+
+# get state abbreviation
+names(statename)[1]<-'ST'
+pop2<-merge(pop,statename,by='ST',all.x=T)
+
+# remove DC
+# pop2<-pop2[pop2$abbr!='DC',]
+# pop2
+
+# create "single"
+pop2$single<-'Single'
+pop2$single[pop2$MSP%in%c('Under 15','Now married, spouse present','Now married, spouse absent')]<-
+  'Married or too young'
+
+# removing DC for mapping purpose
+pop3<-pop2[pop2$abbr!='DC',]
+#save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData')
+```
+
+```{r eval=FALSE}
+pop4<-pop3[,c('PWGTP','AGEP','CIT','COW','SCHL','SEX','WAGP','WKHP','MSP','single','abbr','RAC1P','FSCHP','name')]
+
+pop4$CIT[pop4$CIT==1]<-'Born in the U.S'
+pop4$CIT[pop4$CIT==2]<-'Born in Puerto Rico, Guam, the U.S. Virgin Islands, or the Northern Marianas'
+pop4$CIT[pop4$CIT==3]<-'Born abroad of American parent(s)'
+pop4$CIT[pop4$CIT==4]<-'U.S. citizen by naturalization'
+pop4$CIT[pop4$CIT==5]<-'Not a citizen of the U.S.'
+pop4$CIT<-factor(pop4$CIT)
+
+pop4$COW[is.na(pop4$COW)]<-'Less than 16 years old'
+pop4$COW[pop4$COW==1]<-'Employee of a private for-profit company'
+pop4$COW[pop4$COW==2]<-'Employee of a private not-for-profit'
+pop4$COW[pop4$COW==3]<-'Local government employee'
+pop4$COW[pop4$COW==4]<-'State government employee'
+pop4$COW[pop4$COW==5]<-'Federal government employee'
+pop4$COW[pop4$COW==6]<-'Self-employed in own not incorporated'
+pop4$COW[pop4$COW==7]<-'Self-employed in own incorporated'
+pop4$COW[pop4$COW==8]<-'Working without pay in family business or farm'
+pop4$COW[pop4$COW==9]<-'Unemployed and last worked 5 years ago or earlier'
+pop4$COW<-factor(pop4$COW)
+
+pop4$SCHL[is.na(pop4$SCHL)]<-'Less than 3 years old'
+pop4$SCHL[pop4$SCHL==1]<-'No schooling completed'
+pop4$SCHL[pop4$SCHL%in%c(2:3)]<-'Nursery school, preschool, Kindergarten'
+pop4$SCHL[pop4$SCHL%in%c(4:15)]<-'Grade 1-12 and no diploma'
+pop4$SCHL[pop4$SCHL==16]<-'Regular high school diploma'
+pop4$SCHL[pop4$SCHL==17]<-'GED or alternative credential'
+pop4$SCHL[pop4$SCHL%in%c(18:19)]<-'Some college, no degree'
+pop4$SCHL[pop4$SCHL==20]<-"Associate's degree"
+pop4$SCHL[pop4$SCHL==21]<-"Bachelor's degree"
+pop4$SCHL[pop4$SCHL==22]<-"Master's degree"
+pop4$SCHL[pop4$SCHL==23]<-"Professional degree beyond a bachelor's degree"
+pop4$SCHL[pop4$SCHL==24]<-'Doctorate degree'
+pop4$SCHL<-factor(pop4$SCHL)
+
+pop4$SEX[pop4$SEX==1]<-'Male'
+pop4$SEX[pop4$SEX==2]<-'Female'
+pop4$SEX<-factor(pop4$SEX)
+
+pop4$RAC1P[pop4$RAC1P==1]<-'White'
+pop4$RAC1P[pop4$RAC1P==2]<-'Black or African American'
+pop4$RAC1P[pop4$RAC1P%in%c(3:5)]<-'American Indian or Alaska Native'
+pop4$RAC1P[pop4$RAC1P==6]<-'Asian'
+pop4$RAC1P[pop4$RAC1P==7]<-'Hawaiian and Other Pacific Islander'
+pop4$RAC1P[pop4$RAC1P==8]<-'Other Race'
+pop4$RAC1P[pop4$RAC1P==9]<-'2 or More Races'
+pop4$RAC1P<-factor(pop4$RAC1P)
+
+pop4$MSP<-factor(pop4$MSP)
+pop4$single<-factor(pop4$single)
+```
+
+<b>2.2 Generating plots</b>
+
+```{r eval=FALSE}
+state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
+names(state)<-c('State','StateName','TotalCountWithWeight')
+
+# Plotting sugar daddy
+sugarDaddy<-pop3[pop3$single=='Single'&pop3$SEX==1&!is.na(pop3$WAGP)&pop3$WAGP>=100000,]
+sugarDaddy2<-aggregate(sugarDaddy$PWGTP,by=list(sugarDaddy$abbr), FUN=sum)
+names(sugarDaddy2)<-c('State','CountWithWeight')
+sugarDaddy3<-merge(sugarDaddy2,state,by='State',all.x=T)
+sugarDaddy3$Perc<-round(sugarDaddy3$Count/sugarDaddy3$TotalCount*100,1)
+sugarDaddy4<-merge(sugarDaddy3,actualPopulation,by='StateName',all.x=T)
+sugarDaddy4$ExpectedCount2015<-round(sugarDaddy4$Perc*sugarDaddy4$ActualPop/100,0)
+
+ichoropleth(Perc ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
+```
+
+###Expected percentage of single males earning more than 100K annually
+
+<p align="center"><img src="doc/image/sugarDaddyPerc.png" ></p>
+
+```{r eval=FALSE}
+ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
+```
+
+###Expected total number of single males earning more than 100K annually
+
+<p align="center"><img src="doc/image/sugarDaddyNum.png" ></p>
+
+<p>It seems like New York, California and Massachuset are the best states for me to find my sugar daddy. Great! </p>
+
+<p>I am also curious about Where a young man should go to look for his girl? If his girlfriend criterion are:</p>
+
+<i>"she will be younger than 30 years old with at least a university degree and she must have a job"</i>
+
+<p>Then I have the following plots:</p>
+
+```{r eval=FALSE}
+pgirl<-pop3[pop3$single=='Single'&pop3$SEX==2&pop3$AGEP<30&!is.na(pop3$SCHL)&pop3$SCHL>=21&!is.na(pop3$ESR)&pop3$ESR%in%c(1,2,4,5),]
+pgirl2<-aggregate(pgirl$PWGTP,by=list(pgirl$abbr), FUN=sum)
+names(pgirl2)<-c('State','CountWithWeight')
+pgirl3<-merge(pgirl2,state,by='State',all.x=T)
+pgirl3$Perc<-round(pgirl3$Count/pgirl3$TotalCount*100,1)
+pgirl4<-merge(pgirl3,actualPopulation,by='StateName',all.x=T)
+pgirl4$ExpectedCount2015<-round(pgirl4$Perc*pgirl4$ActualPop/100,0)
+
+ichoropleth(Perc ~ State,data=pgirl4,pal = 'PuRd')
+```
+
+###Expected percentage of single females younger between 16-29 years old, graduated from college, and have a job
+
+<p align="center"><img src="doc/image/perfectGirlPerc.png" ></p>
+
+```{r eval=FALSE}
+ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
+```
+
+###Expected total number of single females younger between 16-29 years old, graduated from college, and have a job
+
+<p align="center"><img src="doc/image/perfectGirlNum.png" ></p>
+
+<p>New York, California and Massachuset are also great choice for him and he has more options such as Pennsylvania, Illinois and Nevada</p>
+
+#3 Which indusrties are the best?
+
+<p>I decide to live in either New York state or California to meet my sugar daddy then I need to know where can I meet him. The best idea will be we work together. So the next step I will figure out where they works. Luckily, data scientist can work in various field.</p>
+
+
+#4 Conclusions
+
+<p>As a master student, if you are single then you should be aware that to find a life parnter who has similiar qualification and income level as you is really hard after you leave school. So try to find one at school!
+
+If you are a rich gentleman who do not care your wife's income then obviously you have more choice. You do not need to rush. Girls will do their best to find you!
+
+To find my dream life partner, I am going to find a data scientist job in New York or California among retail, professional services and manufactoring industry.</p>
+
+#5 Next Step
+
+<p>I would like to build a search engine that automate the proecss of filtering and ploting and it will show the best states to find your life parnter based on your preference</p>
+
+<p>Below is a demo, hope you like it!</p>
+
+<a href="https://yueshengu.shinyapps.io/findingLifePartner/" target="_blank" style="font-size:40px">Soulmate Exploration Engine</a>
+```
