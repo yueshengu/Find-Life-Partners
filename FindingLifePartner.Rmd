@@ -2,7 +2,9 @@
 title: "Finding Life Partner"
 author: "Ruixiong Shi, Danmo Wang, Liu Yi, Rong Wang, Yue Shen Gu"
 date: "January 27, 2016"
-output: html_document
+output:
+  md_document:
+    variant: markdown_github
 ---
 
 # 1 Introduction
