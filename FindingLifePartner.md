@@ -47,7 +47,7 @@ sindata<-sindata %>%
   group_by(SEX)
 ```
 
-![](figs/singlePie.png) ![](figs/singleAge.png)
+![](doc/image/singlePie.png) ![](doc/image/singleAge.png)
 
 <p>
 We can see that single female is slightly more than males but half of single female are aobve 45 yeas old.
@@ -82,7 +82,7 @@ names(unempl2)<-c('Age','Sex','UnemplCount')
 unempl2$id<-paste0(unempl2$Age,unempl2$Sex)
 ```
 
-![](figs/unemplAge.png)
+![](doc/image/unemplAge.png)
 
 <p>
 NEED TO REPHRASE THE FOLLOWING!!!!!! The good news 70% single women are unemployed, so in that sense, I am in top 30% uh? but the bad news is about 75% single men do not have a job when the survey was conducted, unbelievable!
@@ -106,7 +106,7 @@ popudata<-aggregate(popudata$PWGTP,by=list(popudata$WAGP2,popudata$SEX),FUN=sum)
 names(popudata)<-c('WAGP','SEX','PWGTP')
 ```
 
-![](figs/salary.png)
+![](doc/image/salary.png)
 
 <p>
 From the above plot, the low paid group(under 20k annual), for both female and male, dominate all other groups.
@@ -123,7 +123,7 @@ per_edu$SCHL2[per_edu$SCHL%in%c('Less than 3 years old','No schooling completed'
 per_edu$SCHL2<-factor(per_edu$SCHL2)
 ```
 
-![](figs/education.png)
+![](doc/image/education.png)
 
 <p>
 After reading the plots above, I become really nervous about looking for my ideal husband. If I randomly pick a man from US single gentlemen then most of time he is not going to be a perfect husband for me.
@@ -167,7 +167,7 @@ ichoropleth(Perc ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 ### Expected percentage of single males earning more than 100K annually
 
 <p align="center">
-<img src="figs/sugarDaddyPerc.png" >
+<img src="doc/image/sugarDaddyPerc.png" >
 </p>
 ``` r
 ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
@@ -176,7 +176,7 @@ ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 ### Expected total number of single males earning more than 100K annually
 
 <p align="center">
-<img src="figs/sugarDaddyNum.png" >
+<img src="doc/image/sugarDaddyNum.png" >
 </p>
 <p>
 It seems like New York, California and Massachuset are the best states for me to find my sugar daddy. Great!
@@ -204,7 +204,7 @@ ichoropleth(Perc ~ State,data=pgirl4,pal = 'PuRd')
 ### Expected percentage of single females younger between 16-29 years old, graduated from college, and have a job
 
 <p align="center">
-<img src="figs/perfectGirlPerc.png" >
+<img src="doc/image/perfectGirlPerc.png" >
 </p>
 ``` r
 ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
@@ -213,7 +213,7 @@ ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 ### Expected total number of single females younger between 16-29 years old, graduated from college, and have a job
 
 <p align="center">
-<img src="figs/perfectGirlNum.png" >
+<img src="doc/image/perfectGirlNum.png" >
 </p>
 <p>
 New York, California and Massachuset are also great choice for him and he has more options such as Pennsylvania, Illinois and Nevada
