@@ -137,6 +137,8 @@ pop4$single<-factor(pop4$single)
 save(pop4,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
 load('C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
 
+write.csv(pop4,file='C:/Users/ygu/Desktop/columbia/cycle1-1/data/pop4.csv',row.names=F)
+
 state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
 

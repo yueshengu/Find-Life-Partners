@@ -82,13 +82,13 @@ library(htmltab)</code></pre>
 <pre><code>## Warning: package 'htmltab' was built under R version 3.2.3</code></pre>
 <pre class="r"><code>library(rMaps)
 library(rCharts)
-library(data.table)
 library(ggplot2)
 library(dplyr)</code></pre>
+<pre><code>## Warning: package 'dplyr' was built under R version 3.2.3</code></pre>
 </div>
 <div id="load-data" class="section level3">
 <h3>1.2 Load data</h3>
-<pre class="r"><code>load(&quot;./data/pop4.RData&quot;)
+<pre class="r"><code>load(&quot;data/pop4.RData&quot;)
 actualPopulation&lt;-
   htmltab(&quot;https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population&quot;,1)
 
