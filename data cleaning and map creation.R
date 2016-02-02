@@ -1,5 +1,6 @@
 library(rCharts)
 library(htmltab)
+library(data.table)
 
 # source mapping function
 source('C:/Users/ygu/Desktop/columbia/cycle1-1/figs/modified choropleth.R')
@@ -8,8 +9,8 @@ source('C:/Users/ygu/Desktop/columbia/cycle1-1/figs/modified choropleth.R')
 actualPopulation<-
   htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
 
-pop1<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv')
-pop2<-read.csv('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv')
+pop1<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv')
+pop2<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv')
 statename<-read.csv('C:/Users/ygu/Desktop/columbia/cycle1-1/data/statename.csv')
 
 # class(pop1$FOD1P)
@@ -45,9 +46,7 @@ pop$MSP[pop$MSP==6]<-'Never married'
 names(statename)[1]<-'ST'
 pop2<-merge(pop,statename,by='ST',all.x=T)
 
-# remove DC
-# pop2<-pop2[pop2$abbr!='DC',]
-# pop2
+pop2<-as.data.frame.matrix(pop2)
 
 # create "single"
 pop2$single<-'Single'
@@ -61,7 +60,7 @@ save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData'
 
 
 pop4<-pop3[,c('PWGTP','AGEP','CIT','COW','SCHL','SEX','WAGP','WKHP','MSP','single','abbr','RAC1P',
-              'FSCHP','name','NAICSP')]
+              'FSCHP','name','NAICSP',"ST","ESR")]
 
 pop4$CIT[pop4$CIT==1]<-'Born in the U.S'
 pop4$CIT[pop4$CIT==2]<-'Born in Puerto Rico, Guam, the U.S. Virgin Islands, or the Northern Marianas'
@@ -136,7 +135,7 @@ pop4$MSP<-factor(pop4$MSP)
 pop4$single<-factor(pop4$single)
 
 save(pop4,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
-
+load('C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop4.RData')
 
 state<-aggregate(pop3$PWGTP, by=list(pop3$abbr,pop3$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
@@ -174,7 +173,7 @@ write.csv(sugardaddyNYCA4,'C:/Users/ygu/Desktop/columbia/cycle1-1/sugardaddyNYCA
 
 
 # Plotting sugar daddy
-sugarDaddy<-pop3[pop3$single=='Single'&pop3$SEX==1&!is.na(pop3$WAGP)&pop3$WAGP>=10000,]
+sugarDaddy<-pop3[pop3$single=='Single'&pop3$SEX==1&!is.na(pop3$WAGP)&pop3$WAGP>=100000,]
 sugarDaddy2<-aggregate(sugarDaddy$PWGTP,by=list(sugarDaddy$abbr), FUN=sum)
 names(sugarDaddy2)<-c('State','CountWithWeight')
 sugarDaddy3<-merge(sugarDaddy2,state,by='State',all.x=T)

@@ -28,13 +28,15 @@ library(dplyr)
 ### 1.2 Load data 
 
 ```{r}
-#select the columns we need
-colstokeep<-c("PWGTP", "ST", "SCHL", "AGEP", "SEX", "ESR", "MSP", "WAGP")
-pop1<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusa.csv', select = colstokeep)
-pop2<-fread('C:/Users/ygu/Desktop/columbia/csv_pus/ss13pusb.csv',select = colstokeep)
-statename<-read.csv('C:/Users/ygu/Desktop/columbia/cycle1-1/data/statename.csv')
-# combine pops
-pop<-rbind(pop1,pop2)
+load("./data/pop4.RData")
+actualPopulation<-
+  htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
+
+actualPopulation<-actualPopulation[1:52,3:4]
+names(actualPopulation)<-c('StateName','ActualPop')
+actualPopulation$StateName<-substring(actualPopulation$StateName,3)
+actualPopulation$StateName[48]<-substring(actualPopulation$StateName[48],3)
+actualPopulation$ActualPop<-as.numeric(gsub(',','',actualPopulation$ActualPop))
 ```
 
 ### 1.3 How many are they?
@@ -45,24 +47,23 @@ The first thing that come into my mind is I need to understand about some inform
 
 ```{r}
 #excluding married people, and missing values
-sindata<-tbl_df(pop)
+sindata<-tbl_df(pop4)
 sindata<-sindata %>%
   na.omit() %>%
-  filter(MSP %in% c(3,4,5,6)) %>% #code 1&2 are married
+  filter(MSP %in% c('Widowed','Divorced','Separated','Never married')) %>% #code 1&2 are married
   group_by(SEX)
 ```
 
 ```{r echo=FALSE}
-#transfer the code 1&2 into male&female
-sindata$SEX[sindata$SEX==1]<-"Male"
-sindata$SEX[sindata$SEX==2]<-"Female"
-
 #Compute the weighted count for single people and convert it to percentage
 weisingledata<-sindata %>% count(SEX, wt=PWGTP)
 weisingledata$n <- weisingledata$n/sum(sindata$PWGTP)
 
-#Draw the graph of single people by gender
-genderplot<-ggplot(weisingledata,aes(x=SEX, y=n, fill=as.factor(SEX)))+geom_bar(stat="identity")+ggtitle("Comparing single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Percentage of people") 
+#Draw the pie chart of single people by gender
+genderdata<-aggregate(sindata$PWGTP,list(sindata$SEX),FUN=sum)
+names(genderdata)<-c('SEX','Count') # returns female with 40110995 and male with 39512549
+genderdata2<-data.frame(Gender=c(rep('Male',39512549),rep('Female',40110995)))
+genderplot<-ggplot(genderdata2,aes(x=factor(1), fill=as.factor(Gender)))+geom_bar(width = 1)+ggtitle("Comparing single people in US by gender") + scale_fill_discrete(name = "Gender")+coord_polar(theta = 'y')
 genderplot
 
 genderageplot<-ggplot(sindata,aes(x=SEX, y=AGEP, fill=as.factor(SEX)))+geom_boxplot()+ggtitle("Comparing age of single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Age") + scale_y_continuous(limits=c(0,100))
@@ -75,7 +76,7 @@ genderageplot
 
 ```{r}
 #Compute the percentage of weighted single people over total population
-sum(sindata$PWGTP)/sum(pop$PWGTP)
+sum(sindata$PWGTP)/sum(pop4$PWGTP)
 ```
 
 Great! about 40% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
@@ -91,47 +92,31 @@ For the next part, I want to know about these information for the single populat
 <b>1.4.1 Employment status</b>
 
 ```{r echo = FALSE}
-Total<- pop %>%
-  na.omit()%>%
-  filter(MSP %in% c(3,4,5,6)) %>% #select person who is single
-  group_by(SEX) %>% 
-  summarise(count=sum(PWGTP))
+
+empl<-pop4[!is.na(pop4$ESR),]
+empl2<-aggregate(empl$PWGTP,by=list(empl$AGEP,empl$SEX),FUN=sum)
+names(empl2)<-c('Age','Sex','TotalCount')
+empl2$id<-paste0(empl2$Age,empl2$Sex)
 ```
 
 ```{r}
-Employment<- pop %>% 
-na.omit() %>%
-  filter(MSP %in% c(3,4,5,6)) %>%
-  filter(ESR %in% c(3)) %>% # select person only marked as unemployed
-  group_by(SEX) %>% #group by sex
-  summarise(count=sum(PWGTP))
+unempl<-empl[empl$ESR==3,]
+unempl2<-aggregate(unempl$PWGTP,by=list(unempl$AGEP,unempl$SEX),FUN=sum)
+names(unempl2)<-c('Age','Sex','UnemplCount')
+unempl2$id<-paste0(unempl2$Age,unempl2$Sex)
+
 ```
 
 ```{r echo=FALSE}
-##define the gender code
-genderCode = "SEX,gender
-1,Male
-2,Female"
-gendercode <- fread(genderCode)
-
 #Visualize   them here
-job<- mutate(Employment, value = Employment$count/Total$count*100)
-job<- left_join(job, gendercode, by.x=c("SEX"))
-
-#     SEX gender  count    value
-#(int)  (chr)    (int)    (dbl)
-#1     1   Male 32559654 53.79506
-#2     2 Female 34225477 50.11657
-
-gender<- factor(job$gender, levels = unique(job$gender))
+unempl3<-merge(empl2,unempl2[,c('id','UnemplCount')],by='id',all.x=T)
+unempl3$UnemplRatio<-round(unempl3$UnemplCount/unempl3$TotalCount,2)
 
 #plot graph
-AllPlot<- ggplot(job, aes(x=gender, y=value, fill=factor(gender))) +
-  geom_bar(stat="identity",position="dodge") + scale_fill_hue(l=40) +
-  ylab("emplyoment ratio") + 
-  xlab("gender") + ggtitle(paste("Unemployment ratio")) +
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) 
-AllPlot
+
+ggplot(data=unempl3, aes(x=factor(Age), y=UnemplRatio, group=Sex, colour=Sex)) +
+    geom_line() +
+    geom_point()
 ```
 
 <p> The good news 70% single women are unemployed, so in that sense, I am in top 30% uh?
@@ -141,30 +126,27 @@ but the bad news is about 75% single men do not have a job when the survey was c
 
 ```{r echo=FALSE}
 #filter the data
-popudata <- pop %>%
+popudata <- pop4 %>%
   na.omit()%>%
-  filter(MSP %in% c(3,4,5,6))
+  filter(MSP %in% c('Widowed','Divorced','Separated','Never married'))
 ```
 
 <p>I break their income into 6 levels and calculate the weighted count</p>
 
 ```{r}
 #break the WAGP (lower=0, upper=100000, by=20000)
-popudata$WAGP[popudata$WAGP %in% c(0:20000)] <- "0-20k"
-popudata$WAGP[popudata$WAGP %in% c(20000:40000)] <- "20-40k"
-popudata$WAGP[popudata$WAGP %in% c(40000:60000)] <- "40-60k"
-popudata$WAGP[popudata$WAGP %in% c(60000:80000)] <- "60-80k"
-popudata$WAGP[popudata$WAGP %in% c(80000:100000)] <- "80-100k"
-popudata$WAGP[popudata$WAGP %in% c(100000:1000000)] <- "over 100k"
+popudata$WAGP2[popudata$WAGP %in% c(0:20000)] <- "0-20k"
+popudata$WAGP2[popudata$WAGP %in% c(20000:40000)] <- "20-40k"
+popudata$WAGP2[popudata$WAGP %in% c(40000:60000)] <- "40-60k"
+popudata$WAGP2[popudata$WAGP %in% c(60000:80000)] <- "60-80k"
+popudata$WAGP2[popudata$WAGP %in% c(80000:100000)] <- "80-100k"
+popudata$WAGP2[popudata$WAGP %in% c(100000:1000000)] <- "over 100k"
 
 #sum the weights
-popudata<- summarise(popudata,WAGP=WAGP,SEX=SEX,PWGTP=PWGTP)
-popudata <- popudata[, lapply(.SD,sum), by=list(SEX,WAGP)]
+popudata<-aggregate(popudata$PWGTP,by=list(popudata$WAGP2,popudata$SEX),FUN=sum)
+names(popudata)<-c('WAGP','SEX','PWGTP')
 ```
 ```{r echo=FALSE}
-#rename the SEX
-popudata$SEX[popudata$SEX==1] <- "male"
-popudata$SEX[popudata$SEX==2] <- "female"
 
 #plot chart for Count VS Salary
 salaryplot <- ggplot(popudata,aes(x=WAGP, y=PWGTP,fill=factor(SEX)))+geom_bar(stat="identity",position="dodge")
@@ -178,31 +160,28 @@ salaryplot
 
 ```{r echo=FALSE}
 per_edu<-
-  pop%>%
+  pop4%>%
   na.omit() %>%
-  filter(MSP %in% c(3,4,5,6)) #select person who is single
+  filter(MSP %in%c('Widowed','Divorced','Separated','Never married')) #select person who is single
 ```
 
 Change the SCHL codes into different college degrees
 
 ```{r echo=FALSE}
-per_edu$SCHL[per_edu$SCHL < 20] <- "No degree"
-per_edu$SCHL[per_edu$SCHL == 20] <- "Associated degree"
-per_edu$SCHL[per_edu$SCHL == 21] <- "Bachelor's degree"
-per_edu$SCHL[per_edu$SCHL == 22] <- "Master's degree"
-per_edu$SCHL[per_edu$SCHL == 23] <- "Professional degree beyond a bachelor's degree"
-per_edu$SCHL[per_edu$SCHL == 24] <- "Doctorate degree"
+per_edu$SCHL2<-as.character(per_edu$SCHL)
+per_edu$SCHL2[per_edu$SCHL%in%c('Less than 3 years old','No schooling completed',
+                                'Nursery school, preschool, Kindergarten',
+                                'Grade 1-12 and no diploma','Regular high school diploma',
+                                'GED or alternative credential','Some college, no degree')] <- "No degree"
+per_edu$SCHL2<-factor(per_edu$SCHL2)
 ```
 ```{r echo=FALSE}
-per_edu<- summarise(per_edu,SCHL=SCHL,SEX=SEX,PWGTP=PWGTP)
-per_edu<- per_edu[, lapply(.SD,sum), by=list(SEX,SCHL)]
-
-per_edu$SEX[per_edu$SEX==1] <- "male"
-per_edu$SEX[per_edu$SEX==2] <- "female"
+per_edu<- aggregate(per_edu$PWGTP,by=list(per_edu$SCHL2,per_edu$SEX),FUN=sum)
+names(per_edu)<-c('SCHL','SEX','PWGTP')
 #arrange(per_edu,SCHL)
 
 eduplot <- ggplot(per_edu,aes(x=SCHL, y=PWGTP,fill=factor(SEX)))+geom_bar(stat="identity",position="dodge")
-eduplot <- eduplot +ylab("count")+xlab("Levels of ducation")+ggtitle("Education of Single") + scale_x_discrete(limits=c("No degree","Associated degree","Bachelor's degree","Master's degree", "Professional degree beyond a bachelor's degree", "Doctorate degree")) + theme(axis.text.x=element_text(angle=20,hjust=1))
+eduplot <- eduplot +ylab("count")+xlab("Levels of ducation")+ggtitle("Education of Single") + scale_x_discrete(limits=c("No degree","Associate's degree","Bachelor's degree","Master's degree", "Professional degree beyond a bachelor's degree", "Doctorate degree")) + theme(axis.text.x=element_text(angle=20,hjust=1))
 eduplot
 ```
 
@@ -221,94 +200,6 @@ eduplot
 ```{r}
 detach(package:dplyr,unload=T)
 library(plyr)# these two packages are clashed in some functions
-```
-```{r echo=FALSE}
-actualPopulation<-
-  htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
-actualPopulation<-actualPopulation[1:52,3:4]
-names(actualPopulation)<-c('StateName','ActualPop')
-actualPopulation$StateName<-substring(actualPopulation$StateName,3)
-actualPopulation$StateName[48]<-substring(actualPopulation$StateName[48],3)
-actualPopulation$ActualPop<-as.numeric(gsub(',','',actualPopulation$ActualPop))
-
-# make MSP more readable
-pop$MSP[is.na(pop$MSP)]<-'Under 15'
-pop$MSP[pop$MSP==1]<-'Now married, spouse present'
-pop$MSP[pop$MSP==2]<-'Now married, spouse absent'
-pop$MSP[pop$MSP==3]<-'Widowed'
-pop$MSP[pop$MSP==4]<-'Divorced'
-pop$MSP[pop$MSP==5]<-'Separated'
-pop$MSP[pop$MSP==6]<-'Never married'
-
-# get state abbreviation
-names(statename)[1]<-'ST'
-pop2<-merge(pop,statename,by='ST',all.x=T)
-
-# remove DC
-# pop2<-pop2[pop2$abbr!='DC',]
-# pop2
-
-# create "single"
-pop2$single<-'Single'
-pop2$single[pop2$MSP%in%c('Under 15','Now married, spouse present','Now married, spouse absent')]<-
-  'Married or too young'
-
-# removing DC for mapping purpose
-pop3<-pop2[pop2$abbr!='DC',]
-#save(pop3,file='C:/Users/ygu/Desktop/columbia/findingLifePartner/www/pop3.RData')
-```
-
-```{r eval=FALSE}
-pop4<-pop3[,c('PWGTP','AGEP','CIT','COW','SCHL','SEX','WAGP','WKHP','MSP','single','abbr','RAC1P','FSCHP','name')]
-
-pop4$CIT[pop4$CIT==1]<-'Born in the U.S'
-pop4$CIT[pop4$CIT==2]<-'Born in Puerto Rico, Guam, the U.S. Virgin Islands, or the Northern Marianas'
-pop4$CIT[pop4$CIT==3]<-'Born abroad of American parent(s)'
-pop4$CIT[pop4$CIT==4]<-'U.S. citizen by naturalization'
-pop4$CIT[pop4$CIT==5]<-'Not a citizen of the U.S.'
-pop4$CIT<-factor(pop4$CIT)
-
-pop4$COW[is.na(pop4$COW)]<-'Less than 16 years old'
-pop4$COW[pop4$COW==1]<-'Employee of a private for-profit company'
-pop4$COW[pop4$COW==2]<-'Employee of a private not-for-profit'
-pop4$COW[pop4$COW==3]<-'Local government employee'
-pop4$COW[pop4$COW==4]<-'State government employee'
-pop4$COW[pop4$COW==5]<-'Federal government employee'
-pop4$COW[pop4$COW==6]<-'Self-employed in own not incorporated'
-pop4$COW[pop4$COW==7]<-'Self-employed in own incorporated'
-pop4$COW[pop4$COW==8]<-'Working without pay in family business or farm'
-pop4$COW[pop4$COW==9]<-'Unemployed and last worked 5 years ago or earlier'
-pop4$COW<-factor(pop4$COW)
-
-pop4$SCHL[is.na(pop4$SCHL)]<-'Less than 3 years old'
-pop4$SCHL[pop4$SCHL==1]<-'No schooling completed'
-pop4$SCHL[pop4$SCHL%in%c(2:3)]<-'Nursery school, preschool, Kindergarten'
-pop4$SCHL[pop4$SCHL%in%c(4:15)]<-'Grade 1-12 and no diploma'
-pop4$SCHL[pop4$SCHL==16]<-'Regular high school diploma'
-pop4$SCHL[pop4$SCHL==17]<-'GED or alternative credential'
-pop4$SCHL[pop4$SCHL%in%c(18:19)]<-'Some college, no degree'
-pop4$SCHL[pop4$SCHL==20]<-"Associate's degree"
-pop4$SCHL[pop4$SCHL==21]<-"Bachelor's degree"
-pop4$SCHL[pop4$SCHL==22]<-"Master's degree"
-pop4$SCHL[pop4$SCHL==23]<-"Professional degree beyond a bachelor's degree"
-pop4$SCHL[pop4$SCHL==24]<-'Doctorate degree'
-pop4$SCHL<-factor(pop4$SCHL)
-
-pop4$SEX[pop4$SEX==1]<-'Male'
-pop4$SEX[pop4$SEX==2]<-'Female'
-pop4$SEX<-factor(pop4$SEX)
-
-pop4$RAC1P[pop4$RAC1P==1]<-'White'
-pop4$RAC1P[pop4$RAC1P==2]<-'Black or African American'
-pop4$RAC1P[pop4$RAC1P%in%c(3:5)]<-'American Indian or Alaska Native'
-pop4$RAC1P[pop4$RAC1P==6]<-'Asian'
-pop4$RAC1P[pop4$RAC1P==7]<-'Hawaiian and Other Pacific Islander'
-pop4$RAC1P[pop4$RAC1P==8]<-'Other Race'
-pop4$RAC1P[pop4$RAC1P==9]<-'2 or More Races'
-pop4$RAC1P<-factor(pop4$RAC1P)
-
-pop4$MSP<-factor(pop4$MSP)
-pop4$single<-factor(pop4$single)
 ```
 
 <b>2.2 Generating plots</b>
@@ -378,6 +269,29 @@ ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 #3 Which indusrties are the best?
 
 <p>I decide to live in either New York state or California to meet my sugar daddy then I need to know where can I meet him. The best idea will be we work together. So the next step I will figure out where they works. Luckily, data scientist can work in various field.</p>
+```{r echo=FALSE}
+state<-aggregate(pop4$PWGTP, by=list(pop4$abbr,pop4$name), FUN=sum)
+names(state)<-c('State','StateName','TotalCountWithWeight')
+
+
+# look at industry of sugar daddys in NY and CA
+sugardaddyNYCA<-pop4[pop4$single=='Single'&pop4$SEX=='Male'&!is.na(pop4$WAGP)&pop4$WAGP>=10000&
+                       pop4$abbr%in%c('CA','NY'),]
+sugardaddyNYCA2<-aggregate(sugardaddyNYCA$PWGTP,by=list(sugardaddyNYCA$abbr,sugardaddyNYCA$NAICS),FUN=sum)
+names(sugardaddyNYCA2)<-c('State','Industry','CountWithWeight')
+sugardaddyNYCA3<-merge(sugardaddyNYCA2,state,by='State',all.x=T)
+sugardaddyNYCA3$Perc<-round(sugardaddyNYCA3$Count/sugardaddyNYCA3$TotalCount*100,2)
+sugardaddyNYCA4<-merge(sugardaddyNYCA3,actualPopulation,by='StateName',all.x=T)
+sugardaddyNYCA4$ExpectedCount2015<-round(sugardaddyNYCA4$Perc*sugardaddyNYCA4$ActualPop/100,0)
+
+sugardaddyNY<-sugardaddyNYCA4[sugardaddyNYCA4$State=='NY',]
+sugardaddyNY<-sugardaddyNY[rev(order(sugardaddyNY$CountWithWeight)),]
+head(sugardaddyNY[,c('State','Industry','CountWithWeight','Perc')])
+
+sugardaddyCA<-sugardaddyNYCA4[sugardaddyNYCA4$State=='CA',]
+sugardaddyCA<-sugardaddyCA[rev(order(sugardaddyCA$CountWithWeight)),]
+head(sugardaddyCA[,c('State','Industry','CountWithWeight','Perc')])
+```
 
 
 #4 Conclusions
