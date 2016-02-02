@@ -1,3 +1,13 @@
+---
+title: "Finding Life Partner"
+author: "Ruixiong Shi, Danmo Wang, Liu Yi, Rong Wang, Yue Shen Gu"
+date: "January 27, 2016"
+output: 
+  html_document:
+    toc: true
+    theme: united
+---
+
 1 Introduction
 ==============
 
