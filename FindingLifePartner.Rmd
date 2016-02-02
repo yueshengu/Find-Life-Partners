@@ -80,7 +80,7 @@ genderageplot
 sum(sindata$PWGTP)/sum(pop4$PWGTP)
 ```
 
-Great! about 40% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
+Great! about 25% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
 
 <b><i>The next question is, how a nice husband is defined?</i>.</b>
 
@@ -120,8 +120,7 @@ ggplot(data=unempl3, aes(x=factor(Age), y=UnemplRatio, group=Sex, colour=Sex)) +
     geom_point()
 ```
 
-<p> The good news 70% single women are unemployed, so in that sense, I am in top 30% uh?
-but the bad news is about 75% single men do not have a job when the survey was conducted, unbelievable! </p>
+<p>NEED REWORK</p>
 
 <b>1.4.2 Income level</b>
 
