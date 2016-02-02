@@ -47,7 +47,7 @@ sindata<-sindata %>%
   group_by(SEX)
 ```
 
-![](doc/img/singlePie.png) ![](doc/img/singleAge.png)
+![](doc/image/singlePie.png) ![](doc/image/singleAge.png)
 
 <p>
 We can see that single female is slightly more than males but half of single female are aobve 45 yeas old.
@@ -82,7 +82,7 @@ names(unempl2)<-c('Age','Sex','UnemplCount')
 unempl2$id<-paste0(unempl2$Age,unempl2$Sex)
 ```
 
-![](doc/img/unemplAge.png)
+![](doc/image/unemplAge.png)
 
 <p>
 NEED TO REPHRASE THE FOLLOWING!!!!!! The good news 70% single women are unemployed, so in that sense, I am in top 30% uh? but the bad news is about 75% single men do not have a job when the survey was conducted, unbelievable!
