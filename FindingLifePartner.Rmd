@@ -2,9 +2,7 @@
 title: "Finding Life Partner"
 author: "Ruixiong Shi, Danmo Wang, Liu Yi, Rong Wang, Yue Shen Gu"
 date: "January 27, 2016"
-output:
-  md_document:
-    variant: markdown_github
+output: html_document
 ---
 
 # 1 Introduction
@@ -29,7 +27,7 @@ library(dplyr)
 ### 1.2 Load data 
 
 ```{r}
-load("data/pop4.RData")
+load("./data/pop4.RData") #if you want to run the code on your end, change "." to your working directory
 actualPopulation<-
   htmltab("https://en.wikipedia.org/wiki/List_of_U.S._states_and_territories_by_population",1)
 
@@ -66,8 +64,10 @@ names(genderdata)<-c('SEX','Count') # returns female with 40110995 and male with
 genderdata2<-data.frame(Gender=c(rep('Male',39512549),rep('Female',40110995)))
 genderplot<-ggplot(genderdata2,aes(x=factor(1), fill=as.factor(Gender)))+geom_bar(width = 1)+ggtitle("Comparing single people in US by gender") + scale_fill_discrete(name = "Gender")+coord_polar(theta = 'y')
 genderplot
+```
 
-genderageplot<-ggplot(sindata,aes(x=SEX, y=AGEP, fill=as.factor(SEX)))+geom_boxplot()+ggtitle("Comparing age of single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Age") + scale_y_continuous(limits=c(0,100))
+```{r echo=FALSE}
+genderageplot<-ggplot(sindata,aes(x=SEX, y=AGEP, fill=as.factor(SEX)))+geom_boxplot()+ggtitle("Comparing age of single people in US by gender") + scale_fill_discrete(name = "Gender")+xlab("Gender")+ylab("Age") + scale_y_continuous(limits=c(0,100))+theme_bw()
 genderageplot
 ```
 
@@ -80,7 +80,7 @@ genderageplot
 sum(sindata$PWGTP)/sum(pop4$PWGTP)
 ```
 
-Great! about 40% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
+Great! about 25% of population are single even though single ladies are slightly more than single men, I still have a great chance to find a nice husband.
 
 <b><i>The next question is, how a nice husband is defined?</i>.</b>
 
@@ -109,15 +109,14 @@ unempl2$id<-paste0(unempl2$Age,unempl2$Sex)
 ```
 
 ```{r echo=FALSE}
-#Visualize   them here
+#Visualize them here
 unempl3<-merge(empl2,unempl2[,c('id','UnemplCount')],by='id',all.x=T)
 unempl3$UnemplRatio<-round(unempl3$UnemplCount/unempl3$TotalCount,2)
 
 #plot graph
 
 ggplot(data=unempl3, aes(x=factor(Age), y=UnemplRatio, group=Sex, colour=Sex)) +
-    geom_line() +
-    geom_point()
+    geom_line() + geom_point() + scale_y_continuous(limits = c(0, 0.15)) theme_classic()+theme(axis.text.x=element_text(angle=90,hjust=1))+xlab("Age")+ylab("Unemployment ratio")
 ```
 
 <p> The good news 70% single women are unemployed, so in that sense, I am in top 30% uh?
@@ -223,7 +222,7 @@ ichoropleth(Perc ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 
 ###Expected percentage of single males earning more than 100K annually
 
-<p align="center"><img src="doc/image/sugarDaddyPerc.png" ></p>
+<p align="center"><img src="figs/sugarDaddyPerc.png" ></p>
 
 ```{r eval=FALSE}
 ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
@@ -231,7 +230,7 @@ ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 
 ###Expected total number of single males earning more than 100K annually
 
-<p align="center"><img src="doc/image/sugarDaddyNum.png" ></p>
+<p align="center"><img src="figs/sugarDaddyNum.png" ></p>
 
 <p>It seems like New York, California and Massachuset are the best states for me to find my sugar daddy. Great! </p>
 
@@ -255,7 +254,7 @@ ichoropleth(Perc ~ State,data=pgirl4,pal = 'PuRd')
 
 ###Expected percentage of single females younger between 16-29 years old, graduated from college, and have a job
 
-<p align="center"><img src="doc/image/perfectGirlPerc.png" ></p>
+<p align="center"><img src="figs/perfectGirlPerc.png" ></p>
 
 ```{r eval=FALSE}
 ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
@@ -263,7 +262,7 @@ ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 
 ###Expected total number of single females younger between 16-29 years old, graduated from college, and have a job
 
-<p align="center"><img src="doc/image/perfectGirlNum.png" ></p>
+<p align="center"><img src="figs/perfectGirlNum.png" ></p>
 
 <p>New York, California and Massachuset are also great choice for him and he has more options such as Pennsylvania, Illinois and Nevada</p>
 
