@@ -281,25 +281,36 @@ ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 
 <p>In order to find my sugar daddy, I decide to live in either New York state or California to meet my sugar daddy then I need to know where can I meet him. The best idea will be we work together. So the next step I will figure out where they work. Luckily, data scientist can work in various field. </p>
 
+
 ```{r echo=FALSE}
 state<-aggregate(pop4$PWGTP, by=list(pop4$abbr,pop4$name), FUN=sum)
 names(state)<-c('State','StateName','TotalCountWithWeight')
+```
 
-
-# look at industry of sugar daddys in NY and CA
-sugardaddyNYCA<-pop4[pop4$single=='Single'&pop4$SEX=='Male'&!is.na(pop4$WAGP)&pop4$WAGP>=10000&
-                       pop4$abbr%in%c('CA','NY'),]
+```{r message=FALSE}
+# look at industry of sugar daddys in CA and NY
+sugardaddyNYCA<-pop4[pop4$single=='Single'&pop4$SEX=='Male'&!is.na(pop4$WAGP)&pop4$WAGP>=10000&pop4$abbr%in%c('CA','NY'),] #filter the people we need
 sugardaddyNYCA2<-aggregate(sugardaddyNYCA$PWGTP,by=list(sugardaddyNYCA$abbr,sugardaddyNYCA$NAICS),FUN=sum)
 names(sugardaddyNYCA2)<-c('State','Industry','CountWithWeight')
+```
+```{r echo=FALSE}
 sugardaddyNYCA3<-merge(sugardaddyNYCA2,state,by='State',all.x=T)
 sugardaddyNYCA3$Perc<-round(sugardaddyNYCA3$Count/sugardaddyNYCA3$TotalCount*100,2)
 sugardaddyNYCA4<-merge(sugardaddyNYCA3,actualPopulation,by='StateName',all.x=T)
 sugardaddyNYCA4$ExpectedCount2015<-round(sugardaddyNYCA4$Perc*sugardaddyNYCA4$ActualPop/100,0)
+```
 
+<p>Generate a table of the industries they work for NY</p>
+
+```{r message=FALSE}
 sugardaddyNY<-sugardaddyNYCA4[sugardaddyNYCA4$State=='NY',]
 sugardaddyNY<-sugardaddyNY[rev(order(sugardaddyNY$CountWithWeight)),]
 head(sugardaddyNY[,c('State','Industry','CountWithWeight','Perc')])
+```
 
+<p>Do the same thing for CA</p>
+
+```{r message=FALSE}
 sugardaddyCA<-sugardaddyNYCA4[sugardaddyNYCA4$State=='CA',]
 sugardaddyCA<-sugardaddyCA[rev(order(sugardaddyCA$CountWithWeight)),]
 head(sugardaddyCA[,c('State','Industry','CountWithWeight','Perc')])
