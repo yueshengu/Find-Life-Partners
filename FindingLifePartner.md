@@ -196,7 +196,7 @@ ichoropleth(Perc ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
 
 <b>Expected percentage of single males earning more than 100K annually</b>
 
-<p align="left"><img src="doc/image/sugarDaddyPerc.png" >
+<p align="left"><img src="doc/image/sugarDaddyPerc.png" ></p>
 
 ``` r 
 ichoropleth(ExpectedCount2015 ~ State,legend=T,pal='YlOrRd',data=sugarDaddy4)
@@ -280,7 +280,7 @@ ichoropleth(Perc ~ State,data=pgirl4,pal = 'PuRd')
 
 <p align="left"><img src="doc/image/perfectGirlPerc.png" ></p>
 
-```{r eval=FALSE}
+``` r 
 ichoropleth(ExpectedCount2015 ~ State,data=pgirl4,pal = 'PuRd')
 ```
 
