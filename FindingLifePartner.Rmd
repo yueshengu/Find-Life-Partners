@@ -10,11 +10,11 @@ output:
 
 # 1 Introduction
 
-<p>In this script we are interested to see some general information of single people (including those who are separated, widowed and divorced) </p>
+<p>In this script we are interested to see some general features of the singles (including those who are separated, widowed and divorced) </p>
 
-Then we will find out that as a graduated master student, assume I am free to choose the place to work, where is the best state to meet my life partner? (we look for a suitable husband/wife not from mentally match but focus on more reality consideration)
+<p>Then we will find out that as a graduated master student, assuming I am free to choose the place to work, where would be the best states to meet my life partner? 
 
-Our ultimate goal is end up with a search engine that can show you the best state based on your preference of life partner.
+Our ultimate goal is end up with a search engine that can show you the best state based on your preference of life partner, by assuming he/she would make rational rather than emotional decision.
 
 To answer questions in the first part, we focus on their gender ratio, their age distribution, employment status, income and education level. </p>
 
